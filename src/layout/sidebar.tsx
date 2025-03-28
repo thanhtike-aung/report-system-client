@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Drawer,
@@ -26,9 +26,7 @@ import {
 } from "@mui/icons-material";
 import { ProfileSection } from "@/components/profile";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CurrentUser } from "@/types/user";
 import { decodeJWT } from "@/utils/jwt";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { USER_ROLES } from "@/constants";

@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { Bounce, toast, ToastOptions, Zoom } from "react-toastify";
+import { toast, ToastOptions, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface UseToast {

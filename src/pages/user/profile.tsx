@@ -1,7 +1,6 @@
 "use client";
 
 import React, { ReactElement, useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -15,7 +14,7 @@ import {
   useGetProjectsQuery,
 } from "@/redux/apiServices/project";
 import { decodeJWT } from "@/utils/jwt";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Loader2 } from "lucide-react";
 import AnimateButton from "@/components/ui/customAnimateButton";
@@ -26,9 +25,7 @@ import {
 import ProfileSkeleton from "./profileSkeleton";
 import GeneralError from "@/components/error/general";
 import { MESSAGE } from "@/constants/messages";
-import { useNavigate } from "react-router-dom";
 import useToast from "@/hooks/useToast";
-import { logout } from "@/redux/slices/auth";
 
 // Custom hook for managing form state
 const useFormState = <T extends Record<string, any>>(initialState: T) => {
@@ -56,16 +53,13 @@ export default function ProfileEditForm() {
 
   const authToken = useSelector((state: RootState) => state.auth.authToken);
   const currentUser = useMemo(() => decodeJWT(authToken), [authToken]);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { showSuccess } = useToast();
 
   const { data: projects, isLoading: isProjectLoading } = useGetProjectsQuery();
   const { data: user, isLoading: isUserLoading } = useGetUserByIdQuery(
     currentUser.id
   );
-  const [createProjectMutation, { isSuccess: isProjectCreateSuccess }] =
-    useCreateProjectMutation();
+  const [createProjectMutation] = useCreateProjectMutation();
   const [updateUserMutation, { isSuccess: isUserUpdateSuccess }] =
     useUpdateUserMutation();
   const { formData, setFormData, handleInputChange, handleSelectChange } =

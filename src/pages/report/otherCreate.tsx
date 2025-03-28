@@ -195,7 +195,6 @@ export default function OtherReportForm() {
     type,
     workingTime,
     workspace,
-    project,
     leavePeriod,
     leaveReason,
     isLate,
