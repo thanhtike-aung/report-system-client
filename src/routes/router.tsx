@@ -33,6 +33,7 @@ const AppRoutes: React.FC = () => {
                   />
 
                   {/* report */}
+                  <Route path="/" element={<SelfReportForm />} />
                   <Route path="/report/self" element={<SelfReportForm />} />
                   <Route path="/report/other" element={<OtherReportForm />} />
                   <Route path="/report" element={<UnderConstruction />} />
