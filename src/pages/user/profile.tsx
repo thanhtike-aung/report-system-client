@@ -27,6 +27,7 @@ import GeneralError from "@/components/error/general";
 import { MESSAGE } from "@/constants/messages";
 import useToast from "@/hooks/useToast";
 import { logout } from "@/redux/slices/auth";
+import { PRIMARY_COLOR } from "@/constants";
 
 // Custom hook for managing form state
 const useFormState = <T extends Record<string, any>>(initialState: T) => {
@@ -56,7 +57,6 @@ export default function ProfileEditForm() {
   const currentUser = useMemo(() => decodeJWT(authToken), [authToken]);
   const dispatch = useDispatch();
   const { showSuccess } = useToast();
-  const dispatch = useDispatch();
 
   const { data: projects, isLoading: isProjectLoading } = useGetProjectsQuery();
   const { data: user, isLoading: isUserLoading } = useGetUserByIdQuery(
@@ -124,13 +124,19 @@ export default function ProfileEditForm() {
       if (projectId === "0" && formData.otherProject) {
         const project = await createProjectMutation({
           name: formData.otherProject,
+          color: PRIMARY_COLOR,
         }).unwrap();
         projectId = project.id.toString();
       }
 
       await updateUserMutation({
         id: currentUser.id,
-        body: { name: formData.name, email: formData.email, projectId },
+        body: {
+          name: formData.name,
+          email: formData.email,
+          projectId,
+          is_active: true,
+        },
       });
     } catch (error) {
       console.error("Update failed:", error);
