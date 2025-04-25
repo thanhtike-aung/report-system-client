@@ -76,7 +76,7 @@ export default function LoginForm() {
   useEffect(() => {
     if (!isSuccess || !token) return;
     dispatch(login(token));
-    navigate("/report/self");
+    navigate("/attendances/self");
   }, [isSuccess, token, navigate]);
 
   return (
@@ -115,7 +115,7 @@ export default function LoginForm() {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full"
+                  className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full no-override"
                   onClick={togglePasswordVisibility}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >

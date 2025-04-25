@@ -23,30 +23,28 @@ import {
   TYPE,
   WORKING_TIME,
   WORKSPACE,
-} from "@/constants/report";
+} from "@/constants/attendance";
 import { Input } from "@/components/ui/input";
 import Switch from "@mui/material/Switch";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { useCreateReportMutation } from "@/redux/apiServices/report";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { CurrentUser, User } from "@/types/user";
+import { CurrentUser } from "@/types/user";
 import { decodeJWT } from "@/utils/jwt";
 import { StaticTimePicker } from "@mui/x-date-pickers/StaticTimePicker";
 import { Loader2 } from "lucide-react";
 import { MESSAGE } from "@/constants/messages";
 import {
+  AttendanceType,
   LeavePeriod,
-  ReportType,
   WorkingTime,
   Workspace,
-} from "@/types/report";
-import { get } from "@/utils/fetch/get";
+} from "@/types/attendance";
 import useToast from "@/hooks/useToast";
+import { useCreateAttendanceMutation } from "@/redux/apiServices/attendance";
 
 const getInitialFormState = () => ({
-  member: "",
   type: "",
   workingTime: "",
   workspace: "",
@@ -56,12 +54,11 @@ const getInitialFormState = () => ({
   otherLeaveReason: "",
   isLate: false,
   lateMinute: dayjs(),
-  reportBy: 0,
+  reportedBy: 0,
   createdBy: 0,
 });
 
-export default function OtherReportForm() {
-  const [users, setUsers] = useState<User[] | null>(null);
+export default function SelfAttendanceForm() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [formState, setFormState] = useState(getInitialFormState());
   const [storedAuthToken, ,] = useLocalStorage<string | null>(
@@ -69,13 +66,13 @@ export default function OtherReportForm() {
     null
   );
   const [
-    createReportMutation,
+    createAttendanceMutation,
     {
       isLoading: isSubmitLoading,
       isSuccess: isSubmitSuccess,
       isError: isSubmitError,
     },
-  ] = useCreateReportMutation();
+  ] = useCreateAttendanceMutation();
   const { showSuccess, showError } = useToast();
 
   const handleChange = (field: string, value: any) => {
@@ -83,11 +80,12 @@ export default function OtherReportForm() {
   };
 
   const isDisable = (): boolean => {
-    if (!member || !type) return true;
+    if (!type) return true;
     if (type === TYPE.WORKING) {
       if (workingTime !== WORKING_TIME.FULL) {
         return (
           !leaveReason ||
+          !workspace ||
           (leaveReason === LEAVE_REASON.OTHER && !otherLeaveReason)
         );
       }
@@ -116,17 +114,15 @@ export default function OtherReportForm() {
     if (!formState) return;
 
     try {
-      await createReportMutation({
-        type: type as ReportType,
+      await createAttendanceMutation({
+        type: type as AttendanceType,
         workingTime:
           type === TYPE.WORKING ? (workingTime as WorkingTime) : null,
         workspace:
           leavePeriod !== LEAVE_PERIOD.FULL ? (workspace as Workspace) : null,
-        project:
-          users?.find((user) => user.id === Number(member))?.project?.name ||
-          "",
+        project: project,
         createdBy: currentUser?.id || 0,
-        reportedBy: Number(member),
+        reportedBy: currentUser?.id || 0,
         isLate: isLate,
         lateMinute: isLate ? lateMinute : null,
         leavePeriod: type === TYPE.LEAVE ? (leavePeriod as LeavePeriod) : null,
@@ -144,20 +140,11 @@ export default function OtherReportForm() {
   }, [storedAuthToken]);
 
   useEffect(() => {
-    if (!currentUser) return;
-
-    // get all users except current logged-in user for memeber select box
-    get(`${import.meta.env.VITE_API_URL}/users/not/${currentUser.id}`)
-      .then((data) => {
-        setUsers(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
     setFormState((prevState) => ({
       ...prevState,
-      reportBy: currentUser?.id || 1,
+      project: currentUser?.project || "",
+      reportedBy: currentUser?.id || 0,
+      createdBy: currentUser?.id || 0,
     }));
   }, [currentUser]);
 
@@ -186,15 +173,16 @@ export default function OtherReportForm() {
       return;
     }
     if (!isSubmitSuccess) return;
-    showSuccess("Reported successfully 🎉");
+    showSuccess("Attendance reported successfully 🎉");
     setFormState(getInitialFormState());
   }, [isSubmitSuccess, isSubmitError]);
 
   const {
-    member,
     type,
     workingTime,
     workspace,
+    project,
+    reportedBy,
     leavePeriod,
     leaveReason,
     isLate,
@@ -209,29 +197,8 @@ export default function OtherReportForm() {
           <CardTitle>Work Preferences</CardTitle>
           <CardDescription>Set your work type and preferences</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Member */}
-            <div className="space-y-2">
-              <Label htmlFor="type">Member</Label>
-              <Select
-                value={member}
-                onValueChange={(value) => handleChange("member", value)}
-              >
-                <SelectTrigger id="member" className="w-full">
-                  <SelectValue placeholder="Choose member" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users &&
-                    users.map((user) => (
-                      <SelectItem key={user.id} value={user.id.toString()}>
-                        {user.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-6">
             {/* Type */}
             <div className="space-y-2">
               <Label htmlFor="type">Type</Label>
@@ -398,25 +365,24 @@ export default function OtherReportForm() {
                 )}
               </>
             )}
-          </form>
-        </CardContent>
-        <CardFooter>
-          {isSubmitLoading ? (
-            <Button className="w-full custom-primary" disabled>
-              Reporting
-              <Loader2 className="animate-spin" />
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              className="w-full custom-primary custom-animate-button"
-              disabled={isDisable()}
-              onClick={handleSubmit}
-            >
-              Report
-            </Button>
-          )}
-        </CardFooter>
+          </CardContent>
+          <CardFooter className="mt-5">
+            {isSubmitLoading ? (
+              <Button className="w-full" disabled>
+                Reporting
+                <Loader2 className="animate-spin" />
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full custom-primary custom-animate-button"
+                disabled={isDisable()}
+              >
+                Report
+              </Button>
+            )}
+          </CardFooter>
+        </form>
       </Card>
     </>
   );

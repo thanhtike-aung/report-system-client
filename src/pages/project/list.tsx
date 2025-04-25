@@ -46,9 +46,14 @@ const ProjectCard: React.FC<{
   );
 
   return (
-    <Card key={project.id} className="relative">
+    <Card key={project.id} className="relative pt-0 rounded-md">
+      <div
+        className={`h-1 rounded-t-md`}
+        style={{ background: project.color }}
+      ></div>
       <CardHeader>
         <CardTitle>
+          <div className={`bg-[${project.color}]`}></div>
           {isEdit ? (
             <ProjectEditForm
               project={project}
@@ -137,10 +142,12 @@ const ProjectList: React.FC = () => {
 
   return (
     <Card className="max-w-5xl w-full mx-auto">
-      <CardHeader className="font-semibold text-xl">Projects List</CardHeader>
+      <CardHeader className="font-semibold text-xl">
+        Projects ({projects?.length})
+      </CardHeader>
       <CardContent>
         {projects ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-9">
             {projects.map((project) => (
               <ProjectCard
                 key={project.id}

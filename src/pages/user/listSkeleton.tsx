@@ -15,14 +15,14 @@ interface DataTableSkeletonProps {
   showPagination?: boolean;
 }
 
-export function DataTableSkeleton({
+const UserListSkeleton = ({
   columnCount = 6,
   rowCount = 10,
   showFilters = true,
   showPagination = true,
-}: DataTableSkeletonProps) {
+}: DataTableSkeletonProps) => {
   return (
-    <div className="space-y-4">
+    <div className="w-full max-w-6xl mx-auto my-auto space-y-3">
       {/* Filters skeleton */}
       {showFilters && (
         <div className="flex items-center justify-between">
@@ -84,4 +84,6 @@ export function DataTableSkeleton({
       )}
     </div>
   );
-}
+};
+
+export default UserListSkeleton;

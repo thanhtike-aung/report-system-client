@@ -14,7 +14,7 @@ import {
   useGetProjectsQuery,
 } from "@/redux/apiServices/project";
 import { decodeJWT } from "@/utils/jwt";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Loader2 } from "lucide-react";
 import AnimateButton from "@/components/ui/customAnimateButton";
@@ -26,6 +26,7 @@ import ProfileSkeleton from "./profileSkeleton";
 import GeneralError from "@/components/error/general";
 import { MESSAGE } from "@/constants/messages";
 import useToast from "@/hooks/useToast";
+import { logout } from "@/redux/slices/auth";
 
 // Custom hook for managing form state
 const useFormState = <T extends Record<string, any>>(initialState: T) => {
@@ -54,6 +55,7 @@ export default function ProfileEditForm() {
   const authToken = useSelector((state: RootState) => state.auth.authToken);
   const currentUser = useMemo(() => decodeJWT(authToken), [authToken]);
   const { showSuccess } = useToast();
+  const dispatch = useDispatch();
 
   const { data: projects, isLoading: isProjectLoading } = useGetProjectsQuery();
   const { data: user, isLoading: isUserLoading } = useGetUserByIdQuery(
@@ -147,7 +149,7 @@ export default function ProfileEditForm() {
         ) as ReactElement,
         {
           onClose: () => {
-            // dispatch(logout());
+            dispatch(logout());
           },
           autoClose: 5000,
         }

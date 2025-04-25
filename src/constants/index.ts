@@ -8,3 +8,5 @@ export const USER_ROLES = {
   SUB_LEADER: "subleader",
   MEMBER: "member",
 };
+
+export const PRIMARY_COLOR = "#5b87ff";

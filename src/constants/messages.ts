@@ -21,7 +21,8 @@ export const MESSAGE = {
   ERROR: {
     INVALID_EMAIL_FORMAT: "Email format is wrong!",
     SHORT_PASSWORD: "Password must be at least 6 characters",
-    UNKNOWN_ERROR: "Unknown error had occured. Please try again!",
+    UNKNOWN_ERROR:
+      "Unknown error had occured. Please try again or report the issue to developer",
     SERVER_ERROR: "An unknown error had occured at server side.",
   },
   SUCCESS: {

@@ -23,6 +23,10 @@ import {
   PersonAdd,
   Menu as MenuIcon,
   ChevronLeft,
+  ExpandLess,
+  ExpandMore,
+  WbSunny,
+  Brightness4,
 } from "@mui/icons-material";
 import { ProfileSection } from "@/components/profile";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -88,8 +92,11 @@ interface SidebarProps {
   width?: number;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ width = 240 }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const [openMorning, setOpenMorning] = useState<boolean>(false);
+  const [openEvening, setOpenEvening] = useState<boolean>(false);
+
   const currentUser = decodeJWT(
     useSelector((state: RootState) => state.auth.authToken)
   );
@@ -122,73 +129,171 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 240 }) => {
       <MenuContainer>
         <SectionTitle>REPORTING</SectionTitle>
         <List disablePadding>
-          <ListItem disablePadding>
-            <ListItemButton
-              selected={location.pathname === "/report/self"}
-              sx={{
-                minHeight: 48,
-                px: 2.5,
-              }}
-              onClick={() => {
-                navigate("/report/self");
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: 3,
-                  justifyContent: "center",
-                }}
-              >
-                <Person />
-              </ListItemIcon>
-              <ListItemText primary="For myself" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton
-              selected={location.pathname === "/report/other"}
-              onClick={() => {
-                navigate("/report/other");
-              }}
-              sx={{
-                minHeight: 48,
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: 3,
-                  justifyContent: "center",
-                }}
-              >
-                <Group />
-              </ListItemIcon>
-              <ListItemText primary="For other" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton
-              selected={location.pathname === "/report"}
-              onClick={() => navigate("/report")}
-              sx={{
-                minHeight: 48,
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: 3,
-                  justifyContent: "center",
-                }}
-              >
-                <Description />
-              </ListItemIcon>
-              <ListItemText primary="Reports List" />
-            </ListItemButton>
-          </ListItem>
+          {/* Morning Attendance Reporting */}
+          <ListItemButton onClick={() => setOpenMorning(!openMorning)}>
+            <ListItemIcon sx={{ minWidth: 0, mr: 1, justifyContent: "center" }}>
+              <WbSunny />
+            </ListItemIcon>
+            <ListItemText primary="Morning Attendance" />
+            {openMorning ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          {openMorning && (
+            <List component="div" disablePadding>
+              <ListItem disablePadding>
+                <ListItemButton
+                  selected={location.pathname === "/attendances/self"}
+                  onClick={() => navigate("/attendances/self")}
+                  sx={{
+                    paddingLeft: "10px",
+                    minHeight: 48,
+                    px: 2.5,
+                    "&.Mui-selected": {
+                      backgroundColor: "#d9e6ff",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor: "#cad5eb !important",
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: 2,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Person />
+                  </ListItemIcon>
+                  <ListItemText primary="For myself" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  selected={location.pathname === "/attendances/other"}
+                  onClick={() => navigate("/attendances/other")}
+                  sx={{
+                    pl: 4,
+                    minHeight: 48,
+                    px: 2.5,
+                    "&.Mui-selected": {
+                      backgroundColor: "#d9e6ff",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor: "#cad5eb !important",
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: 2,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Group />
+                  </ListItemIcon>
+                  <ListItemText primary="For other" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  selected={location.pathname === "/attendances"}
+                  onClick={() => navigate("/attendances")}
+                  sx={{
+                    pl: 4,
+                    minHeight: 48,
+                    px: 2.5,
+                    "&.Mui-selected": {
+                      backgroundColor: "#d9e6ff",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor: "#cad5eb !important",
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: 2,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Description />
+                  </ListItemIcon>
+                  <ListItemText primary="Attendances List" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          )}
+
+          {/* Evening Reporting */}
+          <ListItemButton onClick={() => setOpenEvening(!openEvening)}>
+            <ListItemIcon sx={{ minWidth: 0, mr: 1, justifyContent: "center" }}>
+              <Brightness4 />
+            </ListItemIcon>
+            <ListItemText primary="Evening Reporting" />
+            {openEvening ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          {openEvening && (
+            <List component="div" disablePadding>
+              <ListItem disablePadding>
+                <ListItemButton
+                  selected={location.pathname === "/report/add"}
+                  onClick={() => navigate("/reports/add")}
+                  sx={{
+                    pl: 4,
+                    minHeight: 48,
+                    px: 2.5,
+                    "&.Mui-selected": {
+                      backgroundColor: "#d9e6ff",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor: "#cad5eb !important",
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: 2,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Work />
+                  </ListItemIcon>
+                  <ListItemText primary="Report Work" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  selected={location.pathname === "/report/evening/list"}
+                  onClick={() => navigate("/report/evening/list")}
+                  sx={{
+                    pl: 4,
+                    minHeight: 48,
+                    px: 2.5,
+                    "&.Mui-selected": {
+                      backgroundColor: "#d9e6ff",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor: "#cad5eb !important",
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: 2,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Description />
+                  </ListItemIcon>
+                  <ListItemText primary="Report List" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          )}
         </List>
 
         <SectionTitle sx={{ mt: 2 }}>PROJECT</SectionTitle>
@@ -200,12 +305,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 240 }) => {
               sx={{
                 minHeight: 48,
                 px: 2.5,
+                "&.Mui-selected": {
+                  backgroundColor: "#d9e6ff",
+                },
+                "&.Mui-selected:hover": {
+                  backgroundColor: "#cad5eb !important",
+                },
               }}
             >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: 3,
+                  mr: 2,
                   justifyContent: "center",
                 }}
               >
@@ -222,6 +333,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 240 }) => {
                 sx={{
                   minHeight: 48,
                   px: 2.5,
+                  "&.Mui-selected": {
+                    backgroundColor: "#d9e6ff",
+                  },
+                  "&.Mui-selected:hover": {
+                    backgroundColor: "#cad5eb !important",
+                  },
                 }}
               >
                 <ListItemIcon
@@ -248,6 +365,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 240 }) => {
               sx={{
                 minHeight: 48,
                 px: 2.5,
+                "&.Mui-selected": {
+                  backgroundColor: "#d9e6ff",
+                },
+                "&.Mui-selected:hover": {
+                  backgroundColor: "#cad5eb !important",
+                },
               }}
             >
               <ListItemIcon
@@ -270,6 +393,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 240 }) => {
                 sx={{
                   minHeight: 48,
                   px: 2.5,
+                  "&.Mui-selected": {
+                    backgroundColor: "#d9e6ff",
+                  },
+                  "&.Mui-selected:hover": {
+                    backgroundColor: "#cad5eb !important",
+                  },
                 }}
               >
                 <ListItemIcon

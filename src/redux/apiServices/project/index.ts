@@ -23,7 +23,7 @@ export const projectApi = createApi({
     getProjectById: builder.query<Project, string>({
       query: (id) => `project/${id}`,
     }),
-    createProject: builder.mutation<Project, { name: string }>({
+    createProject: builder.mutation<Project, { name: string; color: string }>({
       query: (body) => ({
         url: "projects",
         method: "POST",

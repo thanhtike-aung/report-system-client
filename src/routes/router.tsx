@@ -1,12 +1,13 @@
 import ProtectedRoute from "@/components/protectedRoute";
-import UnderConstruction from "@/components/underConstruction";
 import { Sidebar } from "@/layout/sidebar";
+import AttendanceList from "@/pages/attendance/list";
+import OtherAttendanceForm from "@/pages/attendance/otherCreate";
+import SelfAttendanceForm from "@/pages/attendance/selfCreate";
 import LoginForm from "@/pages/auth/loginForm";
 import PasswordChangeForm from "@/pages/auth/passwordChangeForm";
 import ProjectCreateForm from "@/pages/project/create";
 import ProjectList from "@/pages/project/list";
-import OtherReportForm from "@/pages/report/otherCreate";
-import SelfReportForm from "@/pages/report/selfCreate";
+import TaskReportForm from "@/pages/report/create";
 import MemberCreateForm from "@/pages/user/create";
 import MemberEditForm from "@/pages/user/edit";
 import MemberList from "@/pages/user/list";
@@ -32,10 +33,19 @@ const AppRoutes: React.FC = () => {
                     element={<PasswordChangeForm />}
                   />
 
+                  {/* attendance */}
+                  <Route
+                    path="/attendances/self"
+                    element={<SelfAttendanceForm />}
+                  />
+                  <Route
+                    path="/attendances/other"
+                    element={<OtherAttendanceForm />}
+                  />
+                  <Route path="/attendances" element={<AttendanceList />} />
+
                   {/* report */}
-                  <Route path="/report/self" element={<SelfReportForm />} />
-                  <Route path="/report/other" element={<OtherReportForm />} />
-                  <Route path="/report" element={<UnderConstruction />} />
+                  <Route path="/reports/add" element={<TaskReportForm />} />
 
                   {/* user */}
                   <Route path="/members/add" element={<MemberCreateForm />} />

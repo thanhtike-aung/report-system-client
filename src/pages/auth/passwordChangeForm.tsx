@@ -1,9 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,54 +21,65 @@ import { RootState } from "@/redux/store";
 import { decodeJWT } from "@/utils/jwt";
 import { MESSAGE, STATUS_CODES } from "@/constants/messages";
 
-// validation
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(7, "Password must be at least 7 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-type PasswordFormValues = z.infer<typeof passwordSchema>;
-
 const PasswordChangeForm: React.FC = () => {
-  const [showCurrentPassword, setShowCurrentPassword] =
-    useState<boolean>(false);
-  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const authToken = useSelector((state: RootState) => state.auth.authToken);
-  const currentUser = useMemo(() => decodeJWT(authToken), [authToken]);
+  const currentUser = decodeJWT(authToken);
   const [
     changePasswordMutation,
     { isLoading: isChangePasswordLoading, isSuccess: isChangePasswordSuccess },
   ] = useChangePasswordMutation();
   const { showSuccess, showError } = useToast();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<PasswordFormValues>({
-    resolver: zodResolver(passwordSchema),
-    defaultValues: {
+  const validateForm = () => {
+    const newErrors = {
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
-    },
-  });
+    };
 
-  const onSubmit = async (data: PasswordFormValues) => {
+    if (!formData.currentPassword) {
+      newErrors.currentPassword = "Current password is required";
+    }
+    if (!formData.newPassword || formData.newPassword.length < 7) {
+      newErrors.newPassword = "Password must be at least 7 characters";
+    }
+    if (formData.newPassword !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((error) => error);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" })); // Clear error on input change
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       await changePasswordMutation({
         userId: currentUser.id,
-        oldPassword: data.currentPassword,
-        newPassword: data.newPassword,
+        oldPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
       }).unwrap();
     } catch (error: any) {
       if (error.status === STATUS_CODES.UNAUTHORIZED) {
@@ -84,9 +92,14 @@ const PasswordChangeForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!isChangePasswordSuccess) return;
-    reset();
-    showSuccess(`Password ${MESSAGE.SUCCESS.UPDATED}`);
+    if (isChangePasswordSuccess) {
+      setFormData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      showSuccess(`Password ${MESSAGE.SUCCESS.UPDATED}`);
+    }
   }, [isChangePasswordSuccess]);
 
   return (
@@ -100,15 +113,17 @@ const PasswordChangeForm: React.FC = () => {
           Update your password to keep your account secure
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="currentPassword">Current Password</Label>
             <div className="relative">
               <Input
                 id="currentPassword"
+                name="currentPassword"
                 type={showCurrentPassword ? "text" : "password"}
-                {...register("currentPassword")}
+                value={formData.currentPassword}
+                onChange={handleChange}
                 className={
                   errors.currentPassword ? "border-red-500 pr-10" : "pr-10"
                 }
@@ -131,9 +146,7 @@ const PasswordChangeForm: React.FC = () => {
               </Button>
             </div>
             {errors.currentPassword && (
-              <p className="text-sm text-red-500">
-                {errors.currentPassword.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.currentPassword}</p>
             )}
           </div>
 
@@ -142,8 +155,10 @@ const PasswordChangeForm: React.FC = () => {
             <div className="relative">
               <Input
                 id="newPassword"
+                name="newPassword"
                 type={showNewPassword ? "text" : "password"}
-                {...register("newPassword")}
+                value={formData.newPassword}
+                onChange={handleChange}
                 className={
                   errors.newPassword ? "border-red-500 pr-10" : "pr-10"
                 }
@@ -166,9 +181,7 @@ const PasswordChangeForm: React.FC = () => {
               </Button>
             </div>
             {errors.newPassword && (
-              <p className="text-sm text-red-500">
-                {errors.newPassword.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.newPassword}</p>
             )}
           </div>
 
@@ -177,8 +190,10 @@ const PasswordChangeForm: React.FC = () => {
             <div className="relative">
               <Input
                 id="confirmPassword"
+                name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                {...register("confirmPassword")}
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 className={
                   errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"
                 }
@@ -201,9 +216,7 @@ const PasswordChangeForm: React.FC = () => {
               </Button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-sm text-red-500">
-                {errors.confirmPassword.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.confirmPassword}</p>
             )}
           </div>
         </CardContent>

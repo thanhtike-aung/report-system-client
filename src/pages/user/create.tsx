@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, EyeOff, Loader2, RefreshCcw } from "lucide-react";
+import { Eye, EyeOff, Info, Loader2, RefreshCcw } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -39,6 +39,8 @@ import { AlertDialog } from "@/components/ui/alert-dialog";
 import CopyDialog from "@/components/user/copyDialog";
 import AnimateButton from "@/components/ui/customAnimateButton";
 import useToast from "@/hooks/useToast";
+import { Switch } from "@/components/ui/switch";
+import WorkflowsDialog from "@/components/user/workflowsInfoDialog";
 
 export const useFormState = (initialState: Record<string, any>) => {
   const [filteredUsers, setFilteredUsers] = useState<User[] | null>(null);
@@ -73,11 +75,16 @@ export const useFormState = (initialState: Record<string, any>) => {
     }
   };
 
+  const handleSwitchChange = (name: string, value: boolean) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return {
     formData,
     setFormData,
     handleInputChange,
     handleSelectChange,
+    handleSwitchChange,
     filteredUsers,
     setFilteredUsers,
   };
@@ -88,6 +95,8 @@ const MemberCreateForm: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isWorkflowsDialogOpen, setIsWorkflowsDialogOpen] =
+    useState<boolean>(false);
   const [createdUser, setCreatedUser] = useState<{
     email: string | null;
     password: string | null;
@@ -98,18 +107,23 @@ const MemberCreateForm: React.FC = () => {
     setFormData,
     handleInputChange,
     handleSelectChange,
+    handleSwitchChange,
     filteredUsers,
   } = useFormState({
     name: "",
     email: "",
     password: "",
     role: "",
+    isActive: true,
+    workflowsUrl: "",
     supervisorId: "",
     projectId: "",
   });
   const dispatch = useDispatch();
   const { data: users } = useGetUsersQuery();
-  const { data: projects } = useGetProjectsQuery();
+  const { data: projects } = useGetProjectsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const [createUserMutation, { isSuccess, isError, isLoading }] =
     useCreateUserMutation();
   const { showError } = useToast();
@@ -129,7 +143,9 @@ const MemberCreateForm: React.FC = () => {
       !formData.email ||
       !formData.password ||
       !formData.role ||
-      !formData.projectId
+      !formData.projectId ||
+      ((formData.role === "bse" || formData.role === "leader") &&
+        !formData.workflowsUrl)
     ) {
       return true;
     }
@@ -164,6 +180,8 @@ const MemberCreateForm: React.FC = () => {
       email: "",
       password: "",
       role: "",
+      isActive: true,
+      workflowsUrl: "",
       supervisorId: "",
       projectId: "",
     });
@@ -171,46 +189,46 @@ const MemberCreateForm: React.FC = () => {
 
   return (
     <>
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl">Create New Member</CardTitle>
-          <CardDescription>Add a new member to your dev</CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="Enter full name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                />
+      <TooltipProvider>
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-2xl">Create New Member</CardTitle>
+            <CardDescription>Add a new member to your dev</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter full name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="email@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="email@example.com"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex flex-row justify-between">
-                <Label htmlFor="password">Password</Label>
-                <TooltipProvider>
+              <div className="space-y-2">
+                <div className="flex flex-row justify-between">
+                  <Label htmlFor="password">Password</Label>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         type="button"
-                        className="h-[15px] custom-outline"
+                        className="h-[15px] custom-outline no-override"
                         variant="ghost"
                         size="icon"
                         onClick={handleGeneratePassword}
@@ -222,129 +240,176 @@ const MemberCreateForm: React.FC = () => {
                       <p>Click to generate password</p>
                     </TooltipContent>
                   </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a secure password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full"
-                  onClick={handleTogglePassword}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-3.5 w-4.5 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) =>
-                    handleSelectChange("role", value, users)
-                  }
-                >
-                  <SelectTrigger id="role" className="w-full !border-[#dadee3]">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roles.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role.charAt(0).toUpperCase() + role.slice(1)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="supervisor">Leader</Label>
-                <Select
-                  value={formData.supervisorId}
-                  onValueChange={(value) =>
-                    handleSelectChange("supervisorId", value)
-                  }
-                >
-                  <SelectTrigger
-                    id="supervisor"
-                    className="w-full !border-[#dadee3]"
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a secure password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full no-override"
+                    onClick={handleTogglePassword}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    <SelectValue placeholder="Select leader" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">🚫</SelectItem>
-                    {(filteredUsers || users || []).map((supervisor) => (
-                      <SelectItem
-                        key={supervisor.id}
-                        value={supervisor.id.toString()}
-                      >
-                        {supervisor.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    {showPassword ? (
+                      <EyeOff className="h-3.5 w-4.5 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="project">Project</Label>
-                <Select
-                  value={formData.projectId.toString()}
-                  onValueChange={(value) =>
-                    handleSelectChange("projectId", value)
-                  }
-                >
-                  <SelectTrigger
-                    id="project"
-                    className="w-full !border-[#dadee3]"
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="role">Role</Label>
+                  <Select
+                    value={formData.role}
+                    onValueChange={(value) =>
+                      handleSelectChange("role", value, users)
+                    }
                   >
-                    <SelectValue placeholder="Select project" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projects &&
-                      projects.map((project) => (
-                        <SelectItem
-                          key={project.id}
-                          value={project.id.toString()}
-                        >
-                          {project.name}
+                    <SelectTrigger
+                      id="role"
+                      className="w-full !border-[#dadee3]"
+                    >
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
                         </SelectItem>
                       ))}
-                  </SelectContent>
-                </Select>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor">Leader</Label>
+                  <Select
+                    value={formData.supervisorId}
+                    onValueChange={(value) =>
+                      handleSelectChange("supervisorId", value)
+                    }
+                  >
+                    <SelectTrigger
+                      id="supervisor"
+                      className="w-full !border-[#dadee3]"
+                    >
+                      <SelectValue placeholder="Select leader" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">🚫</SelectItem>
+                      {(filteredUsers || users || []).map((supervisor) => (
+                        <SelectItem
+                          key={supervisor.id}
+                          value={supervisor.id.toString()}
+                        >
+                          {supervisor.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="project">Project</Label>
+                  <Select
+                    value={formData.projectId.toString()}
+                    onValueChange={(value) =>
+                      handleSelectChange("projectId", value)
+                    }
+                  >
+                    <SelectTrigger
+                      id="project"
+                      className="w-full !border-[#dadee3]"
+                    >
+                      <SelectValue placeholder="Select project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects &&
+                        projects.map((project) => (
+                          <SelectItem
+                            key={project.id}
+                            value={project.id.toString()}
+                          >
+                            {project.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-end mt-3">
-            {isLoading ? (
-              <Button className="custom-primary" disabled>
-                <Loader2 className="animate-spin" />
-                <Label>Creating...</Label>
-              </Button>
-            ) : (
-              <AnimateButton
-                contentText="Create User"
-                type="submit"
-                disabled={isLoading || isDisabled()}
-              />
-            )}
-          </CardFooter>
-        </form>
-      </Card>
+
+              {(formData.role === "manager" ||
+                formData.role === "bse" ||
+                formData.role === "leader" ||
+                formData.role === "subleader") && (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-1">
+                  <div className="space-y-2">
+                    <Label htmlFor="workflowsUrl">
+                      Workflows URL
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info
+                            className="h-4 w-4 hover:cursor-pointer"
+                            onClick={() => setIsWorkflowsDialogOpen(true)}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>How to create workflows?</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <Input
+                      id="workflowsUrl"
+                      name="workflowsUrl"
+                      value={formData.workflowsUrl}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-1">
+                <div className="space-y-2">
+                  <Label htmlFor="isActive">Active</Label>
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(value) =>
+                      handleSwitchChange("isActive", value)
+                    }
+                  />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end mt-3">
+              {isLoading ? (
+                <Button className="custom-primary" disabled>
+                  <Loader2 className="animate-spin" />
+                  <Label>Creating...</Label>
+                </Button>
+              ) : (
+                <AnimateButton
+                  contentText="Create User"
+                  type="submit"
+                  disabled={isLoading || isDisabled()}
+                />
+              )}
+            </CardFooter>
+          </form>
+        </Card>
+      </TooltipProvider>
 
       {/* <AlertDialog */}
       {createdUser && (
@@ -358,6 +423,12 @@ const MemberCreateForm: React.FC = () => {
           />
         </AlertDialog>
       )}
+
+      {/* Workflows Dialog */}
+      <WorkflowsDialog
+        open={isWorkflowsDialogOpen}
+        setOpen={setIsWorkflowsDialogOpen}
+      />
     </>
   );
 };

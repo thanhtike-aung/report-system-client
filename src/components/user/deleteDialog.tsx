@@ -13,6 +13,8 @@ import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Label } from "../ui/label";
+import useToast from "@/hooks/useToast";
+import { MESSAGE } from "@/constants/messages";
 
 export function DeleteDialog({
   open,
@@ -23,9 +25,10 @@ export function DeleteDialog({
   setOpen: (value: boolean) => void;
   targetContent: { id: number; name: string };
 }) {
-  const [deleteUserMutation, { isLoading, isSuccess }] =
+  const [deleteUserMutation, { isLoading, isSuccess, isError }] =
     useDeleteUserMutation();
   const dispatch = useDispatch();
+  const { showSuccess, showError } = useToast();
   const handleDelete = (id: number) => {
     deleteUserMutation(id.toString());
     setOpen(false);
@@ -34,7 +37,13 @@ export function DeleteDialog({
   useEffect(() => {
     if (!isSuccess) return;
     dispatch(userApi.util.invalidateTags(["User"]));
+    showSuccess(`Member ${MESSAGE.SUCCESS.DELETED}`);
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (!isError) return;
+    showError(MESSAGE.ERROR.UNKNOWN_ERROR);
+  }, [isError]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

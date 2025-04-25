@@ -12,10 +12,11 @@ interface UseToast {
 
 const useToast = (): UseToast => {
   const defaultOptions: ToastOptions = {
-    position: "top-right",
+    position: "top-center",
     autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
+    closeButton: false,
     pauseOnHover: true,
     theme: "dark",
     transition: Zoom,
