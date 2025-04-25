@@ -54,6 +54,7 @@ export default function ProfileEditForm() {
 
   const authToken = useSelector((state: RootState) => state.auth.authToken);
   const currentUser = useMemo(() => decodeJWT(authToken), [authToken]);
+  const dispatch = useDispatch();
   const { showSuccess } = useToast();
   const dispatch = useDispatch();
 
