@@ -37,8 +37,8 @@ export default function TaskReportForm() {
       project: currentUser.project,
       title: "",
       description: "",
-      progress: 0,
-      manHours: 0,
+      progress: null,
+      manHours: null,
       isExpanded: false,
     },
   ]);
@@ -56,7 +56,8 @@ export default function TaskReportForm() {
   }, []);
 
   const totalHours = tasks.reduce((sum, task) => {
-    return sum + task.manHours;
+    const hours = Number(task.manHours) || 0;
+    return sum + hours;
   }, 0);
 
   const remainingHours = 8 - totalHours;
@@ -83,8 +84,8 @@ export default function TaskReportForm() {
       project: "",
       title: "",
       description: "",
-      progress: 0,
-      manHours: 0,
+      progress: null,
+      manHours: null,
       isExpanded: false,
     };
     setTasks([...tasks, newTask]);
@@ -95,6 +96,8 @@ export default function TaskReportForm() {
   };
 
   const getProjectColor = (id: number | null) => {
+    console.log(projects);
+    console.log(id);
     if (!projects || id === null) return "bg-gray-300";
     const project = projects.find((p) => p.id === id);
     return project?.color || "bg-gray-300";
@@ -127,7 +130,7 @@ export default function TaskReportForm() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-7">
         {tasks.map((task, index) => {
           const progressValue = task.progress;
           const projectColor = getProjectColor(task.projectId);
@@ -135,9 +138,10 @@ export default function TaskReportForm() {
           return (
             <Card
               key={task.id}
-              className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-200"
+              className="overflow-hidden border-0 pt-0 shadow-md hover:shadow-lg transition-shadow duration-200"
             >
-              <div className={`h-1 ${projectColor}`}></div>
+              <pre>{projectColor}</pre>
+              <div className="h-1 rounded-t-md" style={{background: projectColor}}></div>
               <CardContent className="p-5">
                 <div className="flex flex-col space-y-4">
                   <div className="flex items-center justify-between">
@@ -181,7 +185,7 @@ export default function TaskReportForm() {
                           handleTaskChange(task.id, "projectId", value)
                         }
                       >
-                        <SelectTrigger className="w-full bg-gray-50 border-0 focus:ring-2 ring-[#5b87ff]/20">
+                        <SelectTrigger className="w-full !bg-gray-100 !px-3 !border-0 focus:ring-2 ring-[#5b87ff]/20">
                           <SelectValue placeholder="Select Project" />
                         </SelectTrigger>
                         <SelectContent>
@@ -193,7 +197,7 @@ export default function TaskReportForm() {
                               >
                                 <div className="flex items-center gap-2">
                                   <span
-                                    className={`w-2 h-2 rounded-full ${project.color}`}
+                                    className="w-2 h-2 rounded-full" style={{background: project.color}}
                                   ></span>
                                   {project.name}
                                 </div>
@@ -213,7 +217,7 @@ export default function TaskReportForm() {
                         onChange={(e) =>
                           handleTaskChange(task.id, "title", e.target.value)
                         }
-                        className="bg-gray-50 border-0 focus:ring-2 ring-[#5b87ff]/20"
+                        className="!bg-gray-100 border-0 focus:ring-2 ring-[#5b87ff]/20"
                       />
                     </div>
 
@@ -227,7 +231,7 @@ export default function TaskReportForm() {
                           min="0"
                           max="100"
                           placeholder="0"
-                          value={task.progress}
+                          value={task.progress || ""}
                           onChange={(e) =>
                             handleTaskChange(
                               task.id,
@@ -235,9 +239,9 @@ export default function TaskReportForm() {
                               e.target.value
                             )
                           }
-                          className="pr-8 bg-gray-50 border-0 focus:ring-2 ring-[#5b87ff]/20"
+                          className="pr-8 !bg-gray-100 border-0 focus:ring-2 ring-[#5b87ff]/20"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <span className="absolute right-18 top-1/2 -translate-y-1/2 text-gray-500">
                           %
                         </span>
                       </div>
@@ -257,11 +261,11 @@ export default function TaskReportForm() {
                         min="0"
                         step="0.5"
                         placeholder="0"
-                        value={task.manHours}
+                        value={task.manHours || ""}
                         onChange={(e) =>
                           handleTaskChange(task.id, "manHours", e.target.value)
                         }
-                        className="bg-gray-50 border-0 focus:ring-2 ring-[#5b87ff]/20"
+                        className="!bg-gray-100 border-0 focus:ring-2 ring-[#5b87ff]/20"
                       />
                     </div>
                   </div>
@@ -278,7 +282,7 @@ export default function TaskReportForm() {
                             e.target.value
                           )
                         }
-                        className="min-h-[100px] w-full bg-gray-50 border-0 focus:ring-2 ring-[#5b87ff]/20"
+                        className="min-h-[100px] w-full !bg-gray-100 border-0 focus:ring-2 ring-[#5b87ff]/20"
                       />
                     </div>
                   )}
@@ -295,7 +299,7 @@ export default function TaskReportForm() {
           className="bg-gradient-to-r from-[#5b87ff] to-[#3b6ae8] hover:from-[#4a76ee] hover:to-[#2a59d7] text-white rounded-full px-6 shadow-md hover:shadow-lg transition-all duration-200"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add Another Task
+          Add Task
         </Button>
       </div>
 

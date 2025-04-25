@@ -14,7 +14,7 @@ export interface Task {
   project: string;
   title: string;
   description: string;
-  progress: number;
-  manHours: number;
+  progress: number | null;
+  manHours: number | null;
   isExpanded: boolean;
 }
