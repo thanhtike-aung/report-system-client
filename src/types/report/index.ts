@@ -10,8 +10,10 @@ export interface Report {
 
 export interface Task {
   id: number;
-  projectId: number | null;
-  project: string;
+  project: {
+    id: number | null;
+    name: string;
+  };
   title: string;
   description: string;
   progress: number | null;

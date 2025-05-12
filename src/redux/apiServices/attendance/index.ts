@@ -13,12 +13,20 @@ export const attendanceApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ["Attendance"],
   endpoints: (builder) => ({
     getAttendances: builder.query<Attendance[], void>({
       query: () => "attendances",
     }),
-    getAttendanceById: builder.query<any, any>({
+    getAttendanceById: builder.query<Attendance, string>({
       query: (id) => `attendances/${id}`,
+    }),
+    getAttendanceByIdAndDate: builder.query<
+      Attendance,
+      { id: string; date: string }
+    >({
+      query: (payload) => `attendances/${payload.id}/${payload.date}`,
+      providesTags: ["Attendance"],
     }),
     createAttendance: builder.mutation<any, AttendancePayload>({
       query: (body) => ({
@@ -40,6 +48,7 @@ export const attendanceApi = createApi({
 export const {
   useGetAttendancesQuery,
   useGetAttendanceByIdQuery,
+  useGetAttendanceByIdAndDateQuery,
   useCreateAttendanceMutation,
   useUpdateAttendanceMutation,
 } = attendanceApi;

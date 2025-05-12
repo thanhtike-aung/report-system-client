@@ -6,7 +6,7 @@ interface UseToast {
   showSuccess: (message: string | ReactElement, options?: ToastOptions) => void;
   showError: (message: string, options?: ToastOptions) => void;
   showInfo: (message: string, options?: ToastOptions) => void;
-  showWarning: (message: string, options?: ToastOptions) => void;
+  showWarning: (message: string | ReactElement, options?: ToastOptions) => void;
   showToast: (message: string, options?: ToastOptions) => void;
 }
 
@@ -37,7 +37,10 @@ const useToast = (): UseToast => {
     toast.info(message, { ...defaultOptions, ...options });
   };
 
-  const showWarning = (message: string, options: ToastOptions = {}) => {
+  const showWarning = (
+    message: string | ReactElement,
+    options: ToastOptions = {}
+  ) => {
     toast.warn(message, { ...defaultOptions, ...options });
   };
 

@@ -150,12 +150,11 @@ const MemberEditForm: React.FC = () => {
           email: formData.email,
           role: formData.role,
           workflowsUrl: formData.workflowsUrl,
-          is_active: formData.isActive,
+          isActive: formData.isActive,
           supervisorId: formData.supervisorId,
           projectId: formData.projectId,
         },
       });
-      dispatch(setIsUserUpdateSuccess(true));
 
       // force refetch to get updated users' data
       dispatch(userApi.util.invalidateTags(["User"]));
@@ -187,9 +186,13 @@ const MemberEditForm: React.FC = () => {
       showError(MESSAGE.ERROR.UNKNOWN_ERROR);
       return;
     }
+  }, [isError]);
+
+  useEffect(() => {
     if (!isSuccess) return;
+    dispatch(setIsUserUpdateSuccess(true));
     navigate("/members");
-  }, [isSuccess, isError]);
+  }, [isSuccess]);
 
   return (
     <>
@@ -269,7 +272,6 @@ const MemberEditForm: React.FC = () => {
                       <SelectValue placeholder="Select leader" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">🚫</SelectItem>
                       {(filteredUsers || users || []).map((supervisor) => (
                         <SelectItem
                           key={supervisor.id}

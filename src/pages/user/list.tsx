@@ -1,12 +1,10 @@
 import { useGetUsersQuery } from "@/redux/apiServices/user";
 import React, { useEffect } from "react";
-import { useGetProjectsQuery } from "@/redux/apiServices/project";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { MESSAGE } from "@/constants/messages";
 import { setIsUserUpdateSuccess } from "@/redux/slices/user/userSlice";
 import useToast from "@/hooks/useToast";
-import GeneralError from "@/components/error/general";
 import Error500 from "@/components/error/500";
 import {
   ColumnFiltersState,
@@ -33,7 +31,9 @@ const MemberList = () => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const { data: users, isLoading } = useGetUsersQuery();
+  const { data: users, isLoading } = useGetUsersQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const isUserUpdateSuccess = useSelector(
     (state: RootState) => state.userUpdate.isUserUpdateSuccess
   );
@@ -45,7 +45,6 @@ const MemberList = () => {
 
   useEffect(() => {
     if (!isUserUpdateSuccess) return;
-    console.log("this?");
     showSuccess(`Member ${MESSAGE.SUCCESS.UPDATED}`, {
       onClose: () => {
         dispatch(setIsUserUpdateSuccess(false));
@@ -86,7 +85,7 @@ const MemberList = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto">
-      <h2 className="text-xl font-semibold mb-6">Members</h2>
+      <h2 className="text-xl font-semibold mb-6">Members ({users.length})</h2>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">

@@ -8,6 +8,7 @@ import PasswordChangeForm from "@/pages/auth/passwordChangeForm";
 import ProjectCreateForm from "@/pages/project/create";
 import ProjectList from "@/pages/project/list";
 import TaskReportForm from "@/pages/report/create";
+import ReportList from "@/pages/report/list";
 import MemberCreateForm from "@/pages/user/create";
 import MemberEditForm from "@/pages/user/edit";
 import MemberList from "@/pages/user/list";
@@ -46,6 +47,7 @@ const AppRoutes: React.FC = () => {
 
                   {/* report */}
                   <Route path="/reports/add" element={<TaskReportForm />} />
+                  <Route path="/reports" element={<ReportList />} />
 
                   {/* user */}
                   <Route path="/members/add" element={<MemberCreateForm />} />

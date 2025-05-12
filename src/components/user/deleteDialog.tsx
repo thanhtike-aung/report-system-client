@@ -10,40 +10,45 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useDeleteUserMutation, userApi } from "@/redux/apiServices/user";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Label } from "../ui/label";
 import useToast from "@/hooks/useToast";
 import { MESSAGE } from "@/constants/messages";
 
+interface DeleteDialogProps {
+  open: boolean;
+  setOpen: (value: boolean) => void;
+  targetContent: { id: number; name: string };
+}
+
 export function DeleteDialog({
   open,
   setOpen,
   targetContent,
-}: {
-  open: boolean;
-  setOpen: (value: boolean) => void;
-  targetContent: { id: number; name: string };
-}) {
+}: DeleteDialogProps) {
   const [deleteUserMutation, { isLoading, isSuccess, isError }] =
     useDeleteUserMutation();
   const dispatch = useDispatch();
   const { showSuccess, showError } = useToast();
-  const handleDelete = (id: number) => {
-    deleteUserMutation(id.toString());
+
+  const handleDelete = useCallback(() => {
+    deleteUserMutation(targetContent.id.toString());
     setOpen(false);
-  };
+  }, [deleteUserMutation, targetContent.id, setOpen]);
 
   useEffect(() => {
-    if (!isSuccess) return;
-    dispatch(userApi.util.invalidateTags(["User"]));
-    showSuccess(`Member ${MESSAGE.SUCCESS.DELETED}`);
+    if (isSuccess) {
+      dispatch(userApi.util.invalidateTags(["User"]));
+      showSuccess(`Member ${MESSAGE.SUCCESS.DELETED}`);
+    }
   }, [isSuccess]);
 
   useEffect(() => {
-    if (!isError) return;
-    showError(MESSAGE.ERROR.UNKNOWN_ERROR);
-  }, [isError]);
+    if (isError) {
+      showError(MESSAGE.ERROR.UNKNOWN_ERROR);
+    }
+  }, [isError, showError]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -52,7 +57,7 @@ export function DeleteDialog({
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete{" "}
-            <b>{targetContent.name}</b>
+            <b>{targetContent.name}</b>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -63,7 +68,7 @@ export function DeleteDialog({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => handleDelete(targetContent.id)}
+            onClick={handleDelete}
             className="!bg-[#ff2200] custom-animate-button"
           >
             {isLoading ? (

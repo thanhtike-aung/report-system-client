@@ -143,7 +143,7 @@ const AttendanceList: React.FC = () => {
   return (
     <div className="w-full max-w-6xl mx-auto space-y-3">
       <h2 className="text-xl font-semibold mb-7">
-        Attendances ({attendances.length})
+        Attendances ({attendancesForDay?.length})
       </h2>
       <div className="flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">

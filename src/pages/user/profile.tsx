@@ -135,7 +135,7 @@ export default function ProfileEditForm() {
           name: formData.name,
           email: formData.email,
           projectId,
-          is_active: true,
+          isActive: true,
         },
       });
     } catch (error) {

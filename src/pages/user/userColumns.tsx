@@ -9,8 +9,16 @@ import { decodeJWT } from "@/utils/jwt";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { USER_ROLES } from "@/constants";
-import useToast from "@/hooks/useToast";
 import { useDeactivateUserMutation, userApi } from "@/redux/apiServices/user";
+import LanIcon from "@mui/icons-material/Lan";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { AuthorizeSenderConfirmDialog } from "@/components/user/authorizeSenderConfirmDialog";
+import { FlashOn, PersonOff, Sensors, SensorsOff } from "@mui/icons-material";
 
 export const userColumns: ColumnDef<User>[] = [
   {
@@ -79,7 +87,9 @@ export const userColumns: ColumnDef<User>[] = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
-      const [open, setOpen] = useState<boolean>(false);
+      const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+      const [openConfirmDialog, setOpenConfirmDialog] =
+        useState<boolean>(false);
       const navigate = useNavigate();
       const dispatch = useDispatch();
       const currentUser = decodeJWT(
@@ -100,45 +110,98 @@ export const userColumns: ColumnDef<User>[] = [
       if (currentUser.role === USER_ROLES.MEMBER) return null;
 
       return (
-        <div className="flex items-center justify-end gap-2 max-w-full">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="p-1 custom-animate-button"
-            onClick={() => navigate(`${user.id}/edit`)}
-          >
-            <Settings className="h-4 w-4" />
-            <span className="sr-only">Edit</span>
-          </Button>
-          {user.is_active ? (
+        <TooltipProvider>
+          <div className="flex items-center justify-end gap-2 max-w-full">
+            {(currentUser.role === USER_ROLES.ROOT_ADMIN ||
+              currentUser.role === USER_ROLES.MANAGER) && (
+              <Tooltip>
+                {user.can_report ? (
+                  <>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 custom-animate-button"
+                        onClick={() => setOpenConfirmDialog(true)}
+                      >
+                        <SensorsOff sx={{ width: "20px" }} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        Unauthorize to send evening reports at Microsoft Teams
+                      </p>
+                    </TooltipContent>
+                  </>
+                ) : (
+                  <>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 custom-animate-button"
+                        onClick={() => setOpenConfirmDialog(true)}
+                      >
+                        <Sensors sx={{ width: "20px" }} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        Authorize to send evening reports at Microsoft Teams
+                      </p>
+                    </TooltipContent>
+                  </>
+                )}
+              </Tooltip>
+            )}
             <Button
               variant="ghost"
               size="sm"
               className="p-1 custom-animate-button"
-              onClick={() => deactivateUser(user.id)}
+              onClick={() => navigate(`${user.id}/edit`)}
             >
-              <UserRoundX className="h-4 w-4" />
-              <span className="sr-only">Inactive</span>
+              <Settings className="h-4 w-4" />
+              <span className="sr-only">Edit</span>
             </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-1 custom-animate-button"
-              onClick={() => setOpen(true)}
-            >
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Delete</span>
-            </Button>
-          )}
+            {user.is_active ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-1 custom-animate-button"
+                onClick={() => deactivateUser(user.id)}
+              >
+                <PersonOff sx={{ width: "20px" }} />
+                <span className="sr-only">Inactive</span>
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-1 custom-animate-button"
+                onClick={() => setOpenDeleteDialog(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Delete</span>
+              </Button>
+            )}
 
-          {/* Dialog */}
-          <DeleteDialog
-            open={open}
-            setOpen={setOpen}
-            targetContent={{ id: user.id, name: user.name }}
-          />
-        </div>
+            {/* Dialog */}
+            <DeleteDialog
+              open={openDeleteDialog}
+              setOpen={setOpenDeleteDialog}
+              targetContent={{ id: user.id, name: user.name }}
+            />
+            <AuthorizeSenderConfirmDialog
+              open={openConfirmDialog}
+              setOpen={setOpenConfirmDialog}
+              targetContent={{
+                id: user.id,
+                name: user.name,
+                canReport: user.can_report,
+              }}
+            />
+          </div>
+        </TooltipProvider>
       );
     },
     size: 120,

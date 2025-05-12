@@ -34,6 +34,7 @@ import { decodeJWT } from "@/utils/jwt";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { USER_ROLES } from "@/constants";
+import { Badge } from "@/components/ui/badge";
 
 // Logo component
 const Logo = styled(Box)(({ theme }) => ({
@@ -120,7 +121,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
       )}
 
       <Logo sx={{ minHeight: 64 }}>
-        <LogoIcon>D</LogoIcon>
+        <LogoIcon>M</LogoIcon>
         <Typography variant="h6" component="div" fontWeight="bold" noWrap>
           MTM-Dev02
         </Typography>
@@ -138,7 +139,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
             {openMorning ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           {openMorning && (
-            <List component="div" disablePadding>
+            <List component="div" disablePadding className="bg-[#f0f0f0]">
               <ListItem disablePadding>
                 <ListItemButton
                   selected={location.pathname === "/attendances/self"}
@@ -235,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
             {openEvening ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           {openEvening && (
-            <List component="div" disablePadding>
+            <List component="div" disablePadding className="bg-[#f0f0f0]">
               <ListItem disablePadding>
                 <ListItemButton
                   selected={location.pathname === "/report/add"}
@@ -266,8 +267,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
               </ListItem>
               <ListItem disablePadding>
                 <ListItemButton
-                  selected={location.pathname === "/report/evening/list"}
-                  onClick={() => navigate("/report/evening/list")}
+                  selected={location.pathname === "/reports"}
+                  onClick={() => navigate("/reports")}
                   sx={{
                     pl: 4,
                     minHeight: 48,
@@ -290,6 +291,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
                     <Description />
                   </ListItemIcon>
                   <ListItemText primary="Report List" />
+                  <Badge variant="secondary" className="h-5 ml-0.5">
+                    maintenance
+                  </Badge>
                 </ListItemButton>
               </ListItem>
             </List>
@@ -316,7 +320,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: 2,
+                  mr: 3,
                   justifyContent: "center",
                 }}
               >

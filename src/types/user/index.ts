@@ -7,7 +7,8 @@ export interface User {
   password: string;
   role: Role;
   workflows_url: string;
-  is_active: Boolean;
+  is_active: boolean;
+  can_report: boolean;
   supervisor_id: number | null;
   supervisor?: User;
   project_id: number;
@@ -15,12 +16,13 @@ export interface User {
 }
 
 export interface UserPayload {
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
   role?: Role;
   workflowsUrl?: string;
-  is_active: Boolean;
-  projectId: string;
+  isActive?: boolean;
+  canReport?: boolean;
+  projectId?: string;
   supervisorId?: string;
 }
 

@@ -9,6 +9,7 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  overflow-x: hidden;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -70,7 +71,7 @@ body {
   min-height: 100vh;
 }
 
-button:not([role="switch"], .no-override) {
+button:not([role="switch"], .no-override, .MuiButtonBase-root) {
   border-radius: 5px;
   border: 1px solid #cccccc;
   padding: 0.6em 1.2em;

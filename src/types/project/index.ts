@@ -4,6 +4,6 @@ export interface Project {
   id: number;
   name: string;
   color: string;
-  updated_at: string;
-  users: User[];
+  updated_at?: string;
+  users?: User[];
 }

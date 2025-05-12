@@ -144,8 +144,7 @@ const MemberCreateForm: React.FC = () => {
       !formData.password ||
       !formData.role ||
       !formData.projectId ||
-      ((formData.role === "bse" || formData.role === "leader") &&
-        !formData.workflowsUrl)
+      (formData.role === "bse" && !formData.workflowsUrl)
     ) {
       return true;
     }
@@ -167,7 +166,6 @@ const MemberCreateForm: React.FC = () => {
 
   useEffect(() => {
     if (isError) {
-      // NOTE: should use custom hook for toast
       showError(MESSAGE.ERROR.UNKNOWN_ERROR);
       return;
     }
@@ -309,7 +307,6 @@ const MemberCreateForm: React.FC = () => {
                       <SelectValue placeholder="Select leader" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">🚫</SelectItem>
                       {(filteredUsers || users || []).map((supervisor) => (
                         <SelectItem
                           key={supervisor.id}

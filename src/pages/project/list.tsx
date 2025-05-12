@@ -66,7 +66,8 @@ const ProjectCard: React.FC<{
       </CardHeader>
       <CardFooter className="flex justify-between">
         <span className="text-sm text-muted-foreground">
-          Last updated: {timeAgo(project.updated_at)}
+          Last updated:{" "}
+          {timeAgo(project.updated_at || "2025-05-07 16:49:52.888")}
         </span>
         {currentUser.role !== USER_ROLES.MEMBER && (
           <div className="flex w-[70px] justify-between space-x-2">
@@ -109,7 +110,7 @@ const ProjectList: React.FC = () => {
 
   const handleDelete = async (project: Project) => {
     // project have active members
-    if (project.users.length !== 0) {
+    if (project.users && project.users.length !== 0) {
       setTargetProject(project);
       setOpenWarning(true);
       return;
@@ -214,7 +215,7 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
     if (ref.current) {
       ref.current.focus();
     }
-  }, [ref]);
+  }, []);
 
   return (
     <>
