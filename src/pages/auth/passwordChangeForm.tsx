@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -21,21 +20,19 @@ import { decodeJWT } from "@/utils/jwt";
 import { MESSAGE, STATUS_CODES } from "@/constants/messages";
 
 const PasswordChangeForm: React.FC = () => {
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-
   const [errors, setErrors] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const authToken = useSelector((state: RootState) => state.auth.authToken);
   const currentUser = decodeJWT(authToken);
@@ -69,11 +66,11 @@ const PasswordChangeForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" })); // Clear error on input change
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     try {
@@ -93,9 +90,14 @@ const PasswordChangeForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!isChangePasswordSuccess) return;
-    setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    showSuccess(`Password ${MESSAGE.SUCCESS.UPDATED}`);
+    if (isChangePasswordSuccess) {
+      setFormData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      showSuccess(`Password ${MESSAGE.SUCCESS.UPDATED}`);
+    }
   }, [isChangePasswordSuccess]);
 
   return (
@@ -128,7 +130,7 @@ const PasswordChangeForm: React.FC = () => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full"
+                className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full no-override"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
               >
                 {showCurrentPassword ? (
@@ -163,7 +165,7 @@ const PasswordChangeForm: React.FC = () => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full"
+                className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full no-override"
                 onClick={() => setShowNewPassword(!showNewPassword)}
               >
                 {showNewPassword ? (
@@ -198,7 +200,7 @@ const PasswordChangeForm: React.FC = () => {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full"
+                className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full no-override"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (

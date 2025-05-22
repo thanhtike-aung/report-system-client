@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 import { MESSAGE } from "@/constants/messages";
 import { useLoginMutation } from "@/redux/apiServices/auth";
 import { useNavigate } from "react-router-dom";
@@ -76,14 +76,17 @@ export default function LoginForm() {
   useEffect(() => {
     if (!isSuccess || !token) return;
     dispatch(login(token));
-    navigate("/report/self");
+    navigate("/attendances/self");
   }, [isSuccess, token, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-background mx-auto">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Morning 🌅</CardTitle>
+          <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+            Login
+            <KeyRound className="h-6 w-6" />
+          </CardTitle>
           <CardDescription>
             Enter your email and password to sign in to your account
           </CardDescription>
@@ -115,7 +118,7 @@ export default function LoginForm() {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full"
+                  className="custom-outline absolute right-0 top-0 px-3 py-2 !hover:bg-transparent !bg-transparent !rounded-full no-override"
                   onClick={togglePasswordVisibility}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >

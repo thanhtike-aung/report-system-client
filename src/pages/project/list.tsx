@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
-  CardContent,
   CardHeader,
   CardTitle,
   CardFooter,
@@ -46,9 +45,14 @@ const ProjectCard: React.FC<{
   );
 
   return (
-    <Card key={project.id} className="relative">
+    <Card key={project.id} className="relative pt-0 rounded-md">
+      <div
+        className={`h-1 rounded-t-md`}
+        style={{ background: project.color }}
+      ></div>
       <CardHeader>
         <CardTitle>
+          <div className={`bg-[${project.color}]`}></div>
           {isEdit ? (
             <ProjectEditForm
               project={project}
@@ -61,7 +65,8 @@ const ProjectCard: React.FC<{
       </CardHeader>
       <CardFooter className="flex justify-between">
         <span className="text-sm text-muted-foreground">
-          Last updated: {timeAgo(project.updated_at)}
+          Last updated:{" "}
+          {timeAgo(project.updated_at || "2025-05-07 16:49:52.888")}
         </span>
         {currentUser.role !== USER_ROLES.MEMBER && (
           <div className="flex w-[70px] justify-between space-x-2">
@@ -104,7 +109,7 @@ const ProjectList: React.FC = () => {
 
   const handleDelete = async (project: Project) => {
     // project have active members
-    if (project.users.length !== 0) {
+    if (project.users && project.users.length !== 0) {
       setTargetProject(project);
       setOpenWarning(true);
       return;
@@ -136,11 +141,13 @@ const ProjectList: React.FC = () => {
   }
 
   return (
-    <Card className="max-w-5xl w-full mx-auto">
-      <CardHeader className="font-semibold text-xl">Projects List</CardHeader>
-      <CardContent>
+    <div className="max-w-5xl w-full mx-auto my-7">
+      <h2 className="font-semibold text-xl mb-7">
+        Projects ({projects?.length})
+      </h2>
+      <div>
         {projects ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-9">
             {projects.map((project) => (
               <ProjectCard
                 key={project.id}
@@ -162,8 +169,8 @@ const ProjectList: React.FC = () => {
         ) : (
           <Label className="text-red-500">Something went wrong!</Label>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
@@ -207,7 +214,7 @@ const ProjectEditForm: React.FC<ProjectEditFormProps> = ({
     if (ref.current) {
       ref.current.focus();
     }
-  }, [ref]);
+  }, []);
 
   return (
     <>

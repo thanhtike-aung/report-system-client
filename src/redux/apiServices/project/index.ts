@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const projectApi = createApi({
   reducerPath: "projectApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api",
+    baseUrl: import.meta.env.VITE_API_URL,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("auth-token");
       if (token) {
@@ -23,7 +23,7 @@ export const projectApi = createApi({
     getProjectById: builder.query<Project, string>({
       query: (id) => `project/${id}`,
     }),
-    createProject: builder.mutation<Project, { name: string }>({
+    createProject: builder.mutation<Project, { name: string; color: string }>({
       query: (body) => ({
         url: "projects",
         method: "POST",

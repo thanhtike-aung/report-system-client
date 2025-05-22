@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api",
+    baseUrl: import.meta.env.VITE_API_URL,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("auth-token");
       if (token) {
@@ -36,6 +36,12 @@ export const userApi = createApi({
         body,
       }),
     }),
+    deactivateUser: builder.mutation<User, string>({
+      query: (id) => ({
+        url: `users/${id}/deactivate`,
+        method: "PATCH",
+      }),
+    }),
     deleteUser: builder.mutation<any, string>({
       query: (id) => ({
         url: `users/${id}`,
@@ -45,6 +51,12 @@ export const userApi = createApi({
     getUsersExceptId: builder.query<User[], number>({
       query: (id) => `users/not/${id}`,
     }),
+    getAuthorizedReportersWithUsersAndReports: builder.query<User[], void>({
+      query: () => "users/authorized/reporters",
+    }),
+    getAuthorizedReportersWithOneWeekReports: builder.query<User[], void>({
+      query: () => "users/authorized/reporters/week",
+    }),
   }),
 });
 
@@ -53,6 +65,9 @@ export const {
   useGetUserByIdQuery,
   useCreateUserMutation,
   useUpdateUserMutation,
+  useDeactivateUserMutation,
   useDeleteUserMutation,
   useGetUsersExceptIdQuery,
+  useGetAuthorizedReportersWithUsersAndReportsQuery,
+  useGetAuthorizedReportersWithOneWeekReportsQuery,
 } = userApi;

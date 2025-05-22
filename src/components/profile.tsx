@@ -101,7 +101,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
           <UserName variant="body1">{userName}</UserName>
           <UserRole variant="body2">{userRole}</UserRole>
         </UserInfo>
-        <IconButton size="small" edge="end">
+        <IconButton size="small" edge="end" className="no-override">
           {open ? (
             <KeyboardArrowUp fontSize="small" />
           ) : (

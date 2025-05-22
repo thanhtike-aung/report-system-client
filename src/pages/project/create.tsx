@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ColorPicker from "@/components/widgets/color-picker";
+import { PRIMARY_COLOR } from "@/constants";
 import { MESSAGE } from "@/constants/messages";
 import useToast from "@/hooks/useToast";
 import { useCreateProjectMutation } from "@/redux/apiServices/project";
@@ -17,15 +19,20 @@ import React, { useEffect, useState } from "react";
 
 const ProjectCreateForm = () => {
   const [projectName, setProjectName] = useState<string>("");
+  const [projectColor, setProjectColor] = useState<string>(PRIMARY_COLOR);
   const [createProjectMutation, { isLoading, isSuccess }] =
     useCreateProjectMutation();
   const { showSuccess } = useToast();
+
+  const handleColorChange = (color: string) => {
+    setProjectColor(color);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (!projectName) return;
-      await createProjectMutation({ name: projectName });
+      await createProjectMutation({ name: projectName, color: projectColor });
     } catch (error) {
       console.error(error);
     }
@@ -39,10 +46,12 @@ const ProjectCreateForm = () => {
 
   return (
     <>
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-md mx-auto bg-customRed">
         <CardHeader>
           <CardTitle>Create project</CardTitle>
-          <CardDescription>Create your project for reporting.</CardDescription>
+          <CardDescription>
+            Create project that are running under your dev.
+          </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent>
@@ -51,9 +60,16 @@ const ProjectCreateForm = () => {
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
-                  placeholder="Name of your project"
+                  placeholder="Project name..."
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label>Color</Label>
+                <ColorPicker
+                  color={projectColor}
+                  onChange={handleColorChange}
                 />
               </div>
             </div>

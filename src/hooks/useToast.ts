@@ -1,24 +1,25 @@
 import { ReactElement } from "react";
-import { toast, ToastOptions, Zoom } from "react-toastify";
+import { Slide, toast, ToastOptions } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface UseToast {
   showSuccess: (message: string | ReactElement, options?: ToastOptions) => void;
   showError: (message: string, options?: ToastOptions) => void;
   showInfo: (message: string, options?: ToastOptions) => void;
-  showWarning: (message: string, options?: ToastOptions) => void;
+  showWarning: (message: string | ReactElement, options?: ToastOptions) => void;
   showToast: (message: string, options?: ToastOptions) => void;
 }
 
 const useToast = (): UseToast => {
   const defaultOptions: ToastOptions = {
-    position: "top-right",
+    position: "bottom-right",
     autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
+    closeButton: false,
     pauseOnHover: true,
-    theme: "dark",
-    transition: Zoom,
+    theme: "colored",
+    transition: Slide,
   };
 
   const showSuccess = (
@@ -36,7 +37,10 @@ const useToast = (): UseToast => {
     toast.info(message, { ...defaultOptions, ...options });
   };
 
-  const showWarning = (message: string, options: ToastOptions = {}) => {
+  const showWarning = (
+    message: string | ReactElement,
+    options: ToastOptions = {}
+  ) => {
     toast.warn(message, { ...defaultOptions, ...options });
   };
 

@@ -11,13 +11,11 @@ import { SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-interface DataTableViewOptionsProps<TData> {
+interface ColumnFilterProps<TData> {
   table: Table<TData>;
 }
 
-export function DataTableViewOptions<TData>({
-  table,
-}: DataTableViewOptionsProps<TData>) {
+const ColumnFilter = <TData,>({ table }: ColumnFilterProps<TData>) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -50,4 +48,6 @@ export function DataTableViewOptions<TData>({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
+
+export default ColumnFilter;

@@ -1,10 +1,10 @@
-import { ReportPayload } from "@/types/report";
+import { Report } from "@/types/report";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api",
+    baseUrl: import.meta.env.VITE_API_URL,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("auth-token");
       if (token) {
@@ -14,13 +14,16 @@ export const reportApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getReports: builder.query<any, any>({
+    getReports: builder.query<Report[], void>({
       query: () => "reports",
     }),
     getReportById: builder.query<any, any>({
       query: (id) => `reports/${id}`,
     }),
-    createReport: builder.mutation<any, ReportPayload>({
+    getReportsByIdAndWeekAgo: builder.query<Report[], number>({
+      query: (id) => `reports/weekago/${id}`,
+    }),
+    createReport: builder.mutation<any, any>({
       query: (body) => ({
         url: "reports",
         method: "POST",
@@ -40,6 +43,7 @@ export const reportApi = createApi({
 export const {
   useGetReportsQuery,
   useGetReportByIdQuery,
+  useGetReportsByIdAndWeekAgoQuery,
   useCreateReportMutation,
   useUpdateReportMutation,
 } = reportApi;

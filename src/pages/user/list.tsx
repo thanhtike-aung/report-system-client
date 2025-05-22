@@ -1,18 +1,37 @@
-import { columns } from "@/components/user/datatable/column";
-import { DataTableSkeleton } from "@/components/user/datatable/datatable-skeleton";
-import { DataTable } from "@/components/user/datatable/datatable";
 import { useGetUsersQuery } from "@/redux/apiServices/user";
-import { useEffect } from "react";
-import { useGetProjectsQuery } from "@/redux/apiServices/project";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { MESSAGE } from "@/constants/messages";
 import { setIsUserUpdateSuccess } from "@/redux/slices/user/userSlice";
 import useToast from "@/hooks/useToast";
+import Error500 from "@/components/error/500";
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
+import InputFilter from "@/components/widgets/datatable/input-filter";
+import { userColumns } from "@/pages/user/userColumns";
+import MultiSelectFilter from "@/components/widgets/datatable/multiselect-filter";
+import ColumnFilter from "@/components/widgets/datatable/column-filter";
+import DataTable from "@/components/widgets/datatable/datatable";
+import UserListSkeleton from "./listSkeleton";
 
-export default function UsersPage() {
-  const { data: users, isLoading } = useGetUsersQuery();
-  const { data: projects } = useGetProjectsQuery(undefined, {
+const MemberList = () => {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const { data: users, isLoading } = useGetUsersQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
   const isUserUpdateSuccess = useSelector(
@@ -33,22 +52,76 @@ export default function UsersPage() {
     });
   }, [isUserUpdateSuccess]);
 
-  return (
-    <div className="w-full max-w-6xl mx-auto">
-      <h2 className="text-3xl font-semibold mb-6">Members List</h2>
+  const table = useReactTable({
+    data: users || [],
+    columns: userColumns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
 
-      {isLoading ? (
-        <DataTableSkeleton />
-      ) : (
-        users && (
-          <DataTable
-            columns={columns}
-            data={users}
-            leaders={supervisors}
-            projects={projects}
-          />
-        )
-      )}
+  const getColumnValues = (items: Array<Record<string, any>>, key: string) => {
+    return items
+      .map((item) => item[key])
+      .filter(
+        (value, index, self) =>
+          index === self.findIndex((v) => v.id === value.id)
+      );
+  };
+
+  if (isLoading) return <UserListSkeleton />;
+  if (!users) return <Error500 />;
+
+  return (
+    <div className="w-full max-w-6xl mx-auto my-7">
+      <h2 className="text-xl font-semibold mb-6">Members ({users.length})</h2>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-1 items-center space-x-2">
+            <InputFilter
+              column={table.getColumn("name")}
+              placeholder="Filter by name..."
+            />
+            <MultiSelectFilter
+              column={table.getColumn("supervisor")}
+              title={table.getColumn("supervisor")?.columnDef.header as string}
+              options={supervisors.map((supervisor) => ({
+                label: supervisor,
+                value: supervisor,
+              }))}
+            />
+            <MultiSelectFilter
+              column={table.getColumn("project")}
+              title={table.getColumn("project")?.columnDef.header as string}
+              options={getColumnValues(users, "project").map((project) => ({
+                label: project.name,
+                value: project.id.toString(),
+              }))}
+            />
+          </div>
+          <ColumnFilter table={table} />
+        </div>
+        {/* NOTE: to use "isUseInactiveStyle",
+            model data binded to table must contain "is_active" data column. */}
+        <DataTable
+          table={table}
+          columnsLength={table.getAllColumns().length}
+          isUseInactiveStyle={true}
+        />
+      </div>
     </div>
   );
-}
+};
+
+export default MemberList;

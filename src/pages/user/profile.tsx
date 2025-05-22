@@ -27,6 +27,7 @@ import GeneralError from "@/components/error/general";
 import { MESSAGE } from "@/constants/messages";
 import useToast from "@/hooks/useToast";
 import { logout } from "@/redux/slices/auth";
+import { PRIMARY_COLOR } from "@/constants";
 
 // Custom hook for managing form state
 const useFormState = <T extends Record<string, any>>(initialState: T) => {
@@ -59,7 +60,8 @@ export default function ProfileEditForm() {
 
   const { data: projects, isLoading: isProjectLoading } = useGetProjectsQuery();
   const { data: user, isLoading: isUserLoading } = useGetUserByIdQuery(
-    currentUser.id
+    currentUser.id,
+    { refetchOnMountOrArgChange: true }
   );
   const [createProjectMutation] = useCreateProjectMutation();
   const [updateUserMutation, { isSuccess: isUserUpdateSuccess }] =
@@ -123,13 +125,19 @@ export default function ProfileEditForm() {
       if (projectId === "0" && formData.otherProject) {
         const project = await createProjectMutation({
           name: formData.otherProject,
+          color: PRIMARY_COLOR,
         }).unwrap();
         projectId = project.id.toString();
       }
 
       await updateUserMutation({
         id: currentUser.id,
-        body: { name: formData.name, email: formData.email, projectId },
+        body: {
+          name: formData.name,
+          email: formData.email,
+          projectId,
+          isActive: true,
+        },
       });
     } catch (error) {
       console.error("Update failed:", error);
@@ -142,7 +150,7 @@ export default function ProfileEditForm() {
         (
           <div className="text-left">
             <h3 className="font-semibold">User data updated successfully.</h3>
-            <p className="mt-1.5 ml-1.5 text-sm text-gray-400">
+            <p className="mt-1.5 ml-1.5 text-sm">
               You will be redirected to login screen shortly.
             </p>
           </div>

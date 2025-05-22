@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
 import {
   useGetUserByIdQuery,
   useGetUsersQuery,
@@ -33,6 +33,13 @@ import SkeletonEditForm from "./editSkeleton";
 import { useDispatch } from "react-redux";
 import { setIsUserUpdateSuccess } from "@/redux/slices/user/userSlice";
 import useToast from "@/hooks/useToast";
+import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import WorkflowsDialog from "@/components/user/workflowsInfoDialog";
 
 export const useFormState = (initialState: Record<string, any>) => {
   const [filteredUsers, setFilteredUsers] = useState<User[] | null>(null);
@@ -67,11 +74,16 @@ export const useFormState = (initialState: Record<string, any>) => {
     }
   };
 
+  const handleSwitchChange = (name: string, value: boolean) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return {
     formData,
     setFormData,
     handleInputChange,
     handleSelectChange,
+    handleSwitchChange,
     filteredUsers,
     setFilteredUsers,
   };
@@ -79,17 +91,22 @@ export const useFormState = (initialState: Record<string, any>) => {
 
 const MemberEditForm: React.FC = () => {
   const roles: Role[] = ["manager", "bse", "leader", "subleader", "member"];
+  const [isWorkflowsDialogOpen, setIsWorkflowsDialogOpen] =
+    useState<boolean>(false);
   const {
     formData,
     setFormData,
     handleInputChange,
     handleSelectChange,
+    handleSwitchChange,
     filteredUsers,
   } = useFormState({
     name: "",
     email: "",
     password: "",
     role: "",
+    workflowsUrl: "",
+    isActive: true,
     supervisorId: "",
     projectId: "",
   });
@@ -113,7 +130,9 @@ const MemberEditForm: React.FC = () => {
       !formData.name ||
       !formData.email ||
       !formData.role ||
-      !formData.projectId
+      !formData.projectId ||
+      ((formData.role === "bse" || formData.role === "leader") &&
+        !formData.workflowsUrl)
     ) {
       return true;
     }
@@ -130,11 +149,12 @@ const MemberEditForm: React.FC = () => {
           name: formData.name,
           email: formData.email,
           role: formData.role,
+          workflowsUrl: formData.workflowsUrl,
+          isActive: formData.isActive,
           supervisorId: formData.supervisorId,
           projectId: formData.projectId,
         },
       });
-      dispatch(setIsUserUpdateSuccess(true));
 
       // force refetch to get updated users' data
       dispatch(userApi.util.invalidateTags(["User"]));
@@ -154,6 +174,8 @@ const MemberEditForm: React.FC = () => {
       name: targetUser?.name,
       email: targetUser.email,
       role: targetUser.role,
+      workflowsUrl: targetUser.workflows_url,
+      isActive: targetUser.is_active,
       supervisorId: targetUser.supervisor_id?.toString(),
       projectId: targetUser.project_id.toString(),
     });
@@ -164,9 +186,13 @@ const MemberEditForm: React.FC = () => {
       showError(MESSAGE.ERROR.UNKNOWN_ERROR);
       return;
     }
+  }, [isError]);
+
+  useEffect(() => {
     if (!isSuccess) return;
+    dispatch(setIsUserUpdateSuccess(true));
     navigate("/members");
-  }, [isSuccess, isError]);
+  }, [isSuccess]);
 
   return (
     <>
@@ -246,7 +272,6 @@ const MemberEditForm: React.FC = () => {
                       <SelectValue placeholder="Select leader" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">🚫</SelectItem>
                       {(filteredUsers || users || []).map((supervisor) => (
                         <SelectItem
                           key={supervisor.id}
@@ -288,6 +313,49 @@ const MemberEditForm: React.FC = () => {
                   </Select>
                 </div>
               </div>
+
+              {(formData.role === "manager" ||
+                formData.role === "bse" ||
+                formData.role === "leader" ||
+                formData.role === "subleader") && (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-1">
+                  <div className="space-y-2">
+                    <Label htmlFor="workflowsUrl">
+                      Workflows URL
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info
+                            className="h-4 w-4 hover:cursor-pointer"
+                            onClick={() => setIsWorkflowsDialogOpen(true)}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>How to create workflows?</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <Input
+                      id="workflowsUrl"
+                      name="workflowsUrl"
+                      value={formData.workflowsUrl || ""}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-1">
+                <div className="space-y-2">
+                  <Label htmlFor="isActive">Active</Label>
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(value) =>
+                      handleSwitchChange("isActive", value)
+                    }
+                  />
+                </div>
+              </div>
             </CardContent>
             <CardFooter className="flex justify-end mt-3">
               <Button
@@ -308,6 +376,12 @@ const MemberEditForm: React.FC = () => {
           </form>
         </Card>
       )}
+
+      {/* Workflows Dialog */}
+      <WorkflowsDialog
+        open={isWorkflowsDialogOpen}
+        setOpen={setIsWorkflowsDialogOpen}
+      />
     </>
   );
 };
