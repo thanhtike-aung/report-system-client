@@ -42,7 +42,11 @@ import {
   Workspace,
 } from "@/types/attendance";
 import useToast from "@/hooks/useToast";
-import { useCreateAttendanceMutation } from "@/redux/apiServices/attendance";
+import {
+  attendanceApi,
+  useCreateAttendanceMutation,
+} from "@/redux/apiServices/attendance";
+import { useDispatch } from "react-redux";
 
 const getInitialFormState = () => ({
   type: "",
@@ -74,6 +78,7 @@ export default function SelfAttendanceForm() {
     },
   ] = useCreateAttendanceMutation();
   const { showSuccess, showError } = useToast();
+  const dispatch = useDispatch();
 
   const handleChange = (field: string, value: any) => {
     setFormState((prevState) => ({ ...prevState, [field]: value }));
@@ -173,7 +178,11 @@ export default function SelfAttendanceForm() {
       return;
     }
     if (!isSubmitSuccess) return;
-    showSuccess("Attendance reported successfully 🎉");
+    showSuccess("Attendance reported successfully");
+
+    // NOTE: this is for evening reporting
+    dispatch(attendanceApi.util.invalidateTags(["Attendance"]));
+
     setFormState(getInitialFormState());
   }, [isSubmitSuccess, isSubmitError]);
 

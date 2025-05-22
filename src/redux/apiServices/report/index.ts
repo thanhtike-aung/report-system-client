@@ -1,3 +1,4 @@
+import { Report } from "@/types/report";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const reportApi = createApi({
@@ -13,11 +14,14 @@ export const reportApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getReports: builder.query<any, any>({
+    getReports: builder.query<Report[], void>({
       query: () => "reports",
     }),
     getReportById: builder.query<any, any>({
       query: (id) => `reports/${id}`,
+    }),
+    getReportsByIdAndWeekAgo: builder.query<Report[], number>({
+      query: (id) => `reports/weekago/${id}`,
     }),
     createReport: builder.mutation<any, any>({
       query: (body) => ({
@@ -39,6 +43,7 @@ export const reportApi = createApi({
 export const {
   useGetReportsQuery,
   useGetReportByIdQuery,
+  useGetReportsByIdAndWeekAgoQuery,
   useCreateReportMutation,
   useUpdateReportMutation,
 } = reportApi;

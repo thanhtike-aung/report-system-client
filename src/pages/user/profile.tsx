@@ -60,7 +60,8 @@ export default function ProfileEditForm() {
 
   const { data: projects, isLoading: isProjectLoading } = useGetProjectsQuery();
   const { data: user, isLoading: isUserLoading } = useGetUserByIdQuery(
-    currentUser.id
+    currentUser.id,
+    { refetchOnMountOrArgChange: true }
   );
   const [createProjectMutation] = useCreateProjectMutation();
   const [updateUserMutation, { isSuccess: isUserUpdateSuccess }] =
@@ -149,7 +150,7 @@ export default function ProfileEditForm() {
         (
           <div className="text-left">
             <h3 className="font-semibold">User data updated successfully.</h3>
-            <p className="mt-1.5 ml-1.5 text-sm text-gray-400">
+            <p className="mt-1.5 ml-1.5 text-sm">
               You will be redirected to login screen shortly.
             </p>
           </div>

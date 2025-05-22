@@ -11,17 +11,16 @@ const AdaptiveCardRenderer: React.FC<AdaptiveCardRendererProps> = ({
   const cardContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!cardPayload) {
+    const parsedContent = JSON.parse(cardPayload).attachments[0].content;
+    if (!parsedContent) {
       return;
     }
-    console.log(
-      "cardPayload: ",
-      JSON.parse(cardPayload).attachments[0].content
-    );
-    if (cardPayload && cardContainerRef.current) {
+    if (parsedContent && cardContainerRef.current) {
       const adaptiveCard = new AdaptiveCards.AdaptiveCard();
-
-      adaptiveCard.parse(JSON.parse(cardPayload).attachments[0].content);
+      if (Array.isArray(parsedContent.body)) {
+        parsedContent.body.shift();
+      }
+      adaptiveCard.parse(parsedContent);
 
       const renderedCard = adaptiveCard.render();
 

@@ -341,7 +341,9 @@ const ReportCreateForm = () => {
   }, [tasks]);
 
   useEffect(() => {
-    if (attendance === undefined || !isAttendanceSuccess) return;
+    console.log("attendance: ", attendance);
+    if (!isAttendanceSuccess) return;
+
     if (attendance === null) {
       showWarning(
         (
@@ -349,22 +351,21 @@ const ReportCreateForm = () => {
             <h4 className="font-semibold">
               You haven't report your morning attendance.
             </h4>
-            <p className="mt-1.5 text-sm text-gray-400">
-              Please report attendance first.
-            </p>
+            <p className="mt-1.5 text-sm">Please report attendance first.</p>
           </div>
         ) as ReactElement,
         {
           autoClose: 5000,
+          className: "!w-[410px]",
         }
       );
       return;
     }
-    if (attendance.type === TYPE.WORKING) {
+    if (attendance?.type === TYPE.WORKING) {
       setWorkingTime(FULL_WORKING_TIME);
       return;
     }
-    if (attendance.type === TYPE.LEAVE && attendance.workspace !== null) {
+    if (attendance?.type === TYPE.LEAVE && attendance.workspace !== null) {
       setWorkingTime(HALF_WORKING_TIME);
       return;
     }
@@ -404,6 +405,7 @@ const ReportCreateForm = () => {
   };
 
   const addTask = () => {
+    if (tasks.length === 10) return;
     const newTask: Task = {
       id: tasks.length + 1,
       project: {

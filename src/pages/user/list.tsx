@@ -84,9 +84,8 @@ const MemberList = () => {
   if (!users) return <Error500 />;
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto my-7">
       <h2 className="text-xl font-semibold mb-6">Members ({users.length})</h2>
-
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-1 items-center space-x-2">

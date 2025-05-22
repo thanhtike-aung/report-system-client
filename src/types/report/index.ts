@@ -5,6 +5,8 @@ export interface Report {
   task_description: string;
   progress: number;
   man_hour: number;
+  working_time: number;
+  updated_at: string;
   user_id: number;
 }
 

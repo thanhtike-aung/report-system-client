@@ -1,14 +1,5 @@
 import * as React from "react";
 import { format, isSameDay, parseISO } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
 
 import {
   useReactTable,
@@ -32,6 +23,7 @@ import GeneralError from "@/components/error/general";
 import { Attendance } from "@/types/attendance";
 import { useGetAttendancesQuery } from "@/redux/apiServices/attendance";
 import AttendanceListSkeleton from "./listSkeleton";
+import DateFilter from "@/components/widgets/date-filter";
 
 const attendanceListColumns: ColumnDef<Attendance>[] = [
   {
@@ -89,10 +81,10 @@ const AttendanceList: React.FC = () => {
     if (!selectedDate || !attendances) return;
 
     const filtered = attendances
-      .filter((r) => isSameDay(parseISO(r.updated_at), selectedDate))
-      .map((r) => ({
-        ...r,
-        updated_at: format(parseISO(r.updated_at), "yyyy/MM/dd HH:mm"),
+      .filter((a) => isSameDay(parseISO(a.updated_at), selectedDate))
+      .map((a) => ({
+        ...a,
+        updated_at: format(parseISO(a.updated_at), "yyyy/MM/dd HH:mm"),
       }));
 
     setAttendancesForDay(filtered);
@@ -141,7 +133,7 @@ const AttendanceList: React.FC = () => {
     );
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-3">
+    <div className="w-full max-w-6xl mx-auto my-7 space-y-3">
       <h2 className="text-xl font-semibold mb-7">
         Attendances ({attendancesForDay?.length})
       </h2>
@@ -166,46 +158,6 @@ const AttendanceList: React.FC = () => {
 
       <DataTable table={table} columnsLength={attendanceListColumns.length} />
     </div>
-  );
-};
-
-/**
- * Date Filter Component
- */
-interface DateFilterProps {
-  onDateChange: (date: Date) => void;
-}
-
-const DateFilter: React.FC<DateFilterProps> = ({ onDateChange }) => {
-  const [date, setDate] = React.useState(new Date());
-
-  const handleChange = (newDate: Date | undefined) => {
-    if (!newDate) return;
-    setDate(newDate);
-    onDateChange(newDate);
-  };
-
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="w-[150px] justify-start text-left font-normal"
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {format(date, "yyyy/MM/dd")}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={handleChange}
-          disabled={{ after: new Date() }}
-          initialFocus
-        />
-      </PopoverContent>
-    </Popover>
   );
 };
 

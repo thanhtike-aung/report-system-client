@@ -5,6 +5,8 @@ import OtherAttendanceForm from "@/pages/attendance/otherCreate";
 import SelfAttendanceForm from "@/pages/attendance/selfCreate";
 import LoginForm from "@/pages/auth/loginForm";
 import PasswordChangeForm from "@/pages/auth/passwordChangeForm";
+import GameAndVarious from "@/pages/event/game_and_various/list";
+import KnowledgeSharingList from "@/pages/event/knowledgesharing/list";
 import ProjectCreateForm from "@/pages/project/create";
 import ProjectList from "@/pages/project/list";
 import TaskReportForm from "@/pages/report/create";
@@ -61,6 +63,16 @@ const AppRoutes: React.FC = () => {
                   {/* project */}
                   <Route path="/projects" element={<ProjectList />} />
                   <Route path="/projects/add" element={<ProjectCreateForm />} />
+
+                  {/* event */}
+                  <Route
+                    path="/event/knowledgesharings"
+                    element={<KnowledgeSharingList />}
+                  />
+                  <Route
+                    path="/event/game_various"
+                    element={<GameAndVarious />}
+                  />
                 </Routes>
               </>
             </ProtectedRoute>

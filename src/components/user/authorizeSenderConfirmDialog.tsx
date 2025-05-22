@@ -64,11 +64,15 @@ export function AuthorizeSenderConfirmDialog({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Authorize Sender</AlertDialogTitle>
+          <AlertDialogTitle>
+            {targetContent.canReport ? "Unauthorize" : "Authorize"}
+          </AlertDialogTitle>
           <AlertDialogDescription className="leading-5">
-            Are you sure you want to authorize <b>{targetContent.name}</b> as a
-            sender? <br /> This action will grant his/her the ability to send
-            reports to you via Microsoft Teams.
+            Are you sure you want to{" "}
+            {targetContent.canReport ? "unauthorize" : "authorize"}{" "}
+            <b>{targetContent.name}</b> as a sender? <br /> This action will
+            grant his/her the ability to send reports to you via Microsoft
+            Teams.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

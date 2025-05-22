@@ -71,7 +71,7 @@ body {
   min-height: 100vh;
 }
 
-button:not([role="switch"], .no-override, .MuiButtonBase-root) {
+button:not([role="switch"], [role="tab"], .no-override, .MuiButtonBase-root) {
   border-radius: 5px;
   border: 1px solid #cccccc;
   padding: 0.6em 1.2em;
@@ -127,6 +127,12 @@ button:not(.no-override):hover {
 [data-slot="select-value"] {
   font-size: 14px;
   font-weight: 400;
+}
+
+@keyframes bg-animate {
+  to {
+    background-position-x: -200px;
+  }
 }
 
 /* customization end */

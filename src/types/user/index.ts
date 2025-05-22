@@ -1,4 +1,5 @@
 import { Project } from "../project";
+import { Report } from "../report";
 
 export interface User {
   id: number;
@@ -11,8 +12,10 @@ export interface User {
   can_report: boolean;
   supervisor_id: number | null;
   supervisor?: User;
+  subordinates?: User[];
   project_id: number;
   project?: Project;
+  reports?: Report[];
 }
 
 export interface UserPayload {

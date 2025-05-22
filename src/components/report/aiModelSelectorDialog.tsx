@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Bot, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +53,7 @@ interface AIModelSelectorProps {
 
 export function AIModelSelector({
   onSelectModel,
-  buttonText = "Summarize with AI",
+  buttonText = "Summarize Reports",
 }: AIModelSelectorProps) {
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -65,14 +65,23 @@ export function AIModelSelector({
     }
   };
 
+  // useEffect(() => {
+  //   if (!selectedModel) return;
+
+  // }, [selectedModel]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">AI assistant</Button>
+        <Button variant="default">
+          <Bot className="h-4 w-4" />
+          AI assistant
+          <Badge variant="secondary">Beta</Badge>
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Select an AI Model</DialogTitle>
+          <DialogTitle>Select an AI Model<Badge className="ml-1.5">Beta</Badge></DialogTitle>
           <DialogDescription>
             Choose an AI model to process your content
           </DialogDescription>

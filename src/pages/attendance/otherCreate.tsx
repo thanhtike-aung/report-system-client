@@ -186,7 +186,7 @@ export default function OtherAttendanceForm() {
       return;
     }
     if (!isSubmitSuccess) return;
-    showSuccess("Attendance reported successfully 🎉");
+    showSuccess("Attendance reported successfully");
     setFormState(getInitialFormState());
   }, [isSubmitSuccess, isSubmitError]);
 

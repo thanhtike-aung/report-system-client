@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { toast, ToastOptions, Zoom } from "react-toastify";
+import { Slide, toast, ToastOptions } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface UseToast {
@@ -12,14 +12,14 @@ interface UseToast {
 
 const useToast = (): UseToast => {
   const defaultOptions: ToastOptions = {
-    position: "top-center",
+    position: "bottom-right",
     autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: true,
     closeButton: false,
     pauseOnHover: true,
-    theme: "dark",
-    transition: Zoom,
+    theme: "colored",
+    transition: Slide,
   };
 
   const showSuccess = (

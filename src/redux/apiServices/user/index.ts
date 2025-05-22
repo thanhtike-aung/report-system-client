@@ -51,6 +51,12 @@ export const userApi = createApi({
     getUsersExceptId: builder.query<User[], number>({
       query: (id) => `users/not/${id}`,
     }),
+    getAuthorizedReportersWithUsersAndReports: builder.query<User[], void>({
+      query: () => "users/authorized/reporters",
+    }),
+    getAuthorizedReportersWithOneWeekReports: builder.query<User[], void>({
+      query: () => "users/authorized/reporters/week",
+    }),
   }),
 });
 
@@ -62,4 +68,6 @@ export const {
   useDeactivateUserMutation,
   useDeleteUserMutation,
   useGetUsersExceptIdQuery,
+  useGetAuthorizedReportersWithUsersAndReportsQuery,
+  useGetAuthorizedReportersWithOneWeekReportsQuery,
 } = userApi;

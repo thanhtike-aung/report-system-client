@@ -13,6 +13,7 @@ import {
   useMediaQuery,
   styled,
   useTheme,
+  Divider,
 } from "@mui/material";
 import {
   Person,
@@ -27,6 +28,8 @@ import {
   ExpandMore,
   WbSunny,
   Brightness4,
+  Forum,
+  SportsEsports,
 } from "@mui/icons-material";
 import { ProfileSection } from "@/components/profile";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -34,7 +37,6 @@ import { decodeJWT } from "@/utils/jwt";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { USER_ROLES } from "@/constants";
-import { Badge } from "@/components/ui/badge";
 
 // Logo component
 const Logo = styled(Box)(({ theme }) => ({
@@ -94,15 +96,16 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
-  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  // Set initial state: open on desktop, closed on mobile
+  const [mobileOpen, setMobileOpen] = useState<boolean>(() => !isMobile);
   const [openMorning, setOpenMorning] = useState<boolean>(false);
   const [openEvening, setOpenEvening] = useState<boolean>(false);
 
   const currentUser = decodeJWT(
     useSelector((state: RootState) => state.auth.authToken)
   );
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -110,19 +113,45 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
     setMobileOpen(!mobileOpen);
   };
 
+  // Show close button on all screen sizes
   const drawer = (
     <SidebarContainer>
-      {isMobile && (
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerToggle}>
-            <ChevronLeft />
-          </IconButton>
-        </DrawerHeader>
-      )}
+      {/* Absolutely positioned close button */}
+      <IconButton
+        onClick={handleDrawerToggle}
+        sx={{
+          position: "absolute",
+          top: 300,
+          right: 8,
+          zIndex: 1301,
+          background: "white",
+          boxShadow: 1,
+          "&:hover": { background: "#f0f0f0" },
+        }}
+        size="small"
+      >
+        <ChevronLeft />
+      </IconButton>
+
+      {/* Remove DrawerHeader if not needed */}
+      {/* <DrawerHeader /> */}
 
       <Logo sx={{ minHeight: 64 }}>
         <LogoIcon>M</LogoIcon>
-        <Typography variant="h6" component="div" fontWeight="bold" noWrap>
+        <Typography
+          variant="h6"
+          component="div"
+          fontWeight="bold"
+          noWrap
+          sx={{
+            fontSize: "1.7rem",
+            background: "url('/pattern-bg.jpg') center",
+            backgroundSize: "cover",
+            backgroundClip: "text",
+            color: "transparent",
+            animation: "bg-animate 10s linear infinite",
+          }}
+        >
           MTM-Dev02
         </Typography>
       </Logo>
@@ -139,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
             {openMorning ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           {openMorning && (
-            <List component="div" disablePadding className="bg-[#f0f0f0]">
+            <List component="div" disablePadding>
               <ListItem disablePadding>
                 <ListItemButton
                   selected={location.pathname === "/attendances/self"}
@@ -224,6 +253,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
                   <ListItemText primary="Attendances List" />
                 </ListItemButton>
               </ListItem>
+              <Divider />
             </List>
           )}
 
@@ -236,10 +266,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
             {openEvening ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
           {openEvening && (
-            <List component="div" disablePadding className="bg-[#f0f0f0]">
+            <List component="div" disablePadding>
               <ListItem disablePadding>
                 <ListItemButton
-                  selected={location.pathname === "/report/add"}
+                  selected={location.pathname === "/reports/add"}
                   onClick={() => navigate("/reports/add")}
                   sx={{
                     pl: 4,
@@ -291,11 +321,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
                     <Description />
                   </ListItemIcon>
                   <ListItemText primary="Report List" />
-                  <Badge variant="secondary" className="h-5 ml-0.5">
-                    maintenance
-                  </Badge>
                 </ListItemButton>
               </ListItem>
+              <Divider />
             </List>
           )}
         </List>
@@ -419,6 +447,60 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
             </ListItem>
           )}
         </List>
+
+        {/* Event */}
+        <SectionTitle sx={{ mt: 2 }}>EVENT</SectionTitle>
+
+        {/* Knowledge Sharing */}
+        <List disablePadding>
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={location.pathname === "/event/knowledgesharings"}
+              onClick={() => navigate("/event/knowledgesharings")}
+              sx={{
+                minHeight: 48,
+                px: 2.5,
+                "&.Mui-selected": {
+                  backgroundColor: "#d9e6ff",
+                },
+                "&.Mui-selected:hover": {
+                  backgroundColor: "#cad5eb !important",
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{ minWidth: 0, mr: 3, justifyContent: "center" }}
+              >
+                <Forum />
+              </ListItemIcon>
+              <ListItemText primary="Knowledge Sharing" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+
+        {/* Game & Various Events */}
+        {/* <List disablePadding>
+          <ListItem disablePadding>
+            <ListItemButton
+            selected={location.pathname === "/event/game_various"}
+            onClick={() => navigate("/event/game_various")}
+            sx={{
+              minHeight: 48,
+              px: 2.5,
+              "&.Mui-selected": {
+                backgroundColor: "#d9e6ff",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "#cad5eb !important"
+              },
+            }}>
+              <ListItemIcon sx={{minWidth: 0, mr: 3, justifyContent: "center"}}>
+                <SportsEsports/>
+              </ListItemIcon>
+              <ListItemText primary="Game" />
+            </ListItemButton>
+          </ListItem>
+        </List> */}
       </MenuContainer>
 
       {/* Profile section */}
@@ -431,64 +513,45 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
 
   return (
     <>
-      {/* Mobile menu button */}
-      {isMobile && (
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{
-            position: "fixed",
-            top: 8,
-            left: 15,
-            zIndex: 1199,
-            backgroundColor: theme.palette.background.paper,
-            "&:hover": {
-              backgroundColor: theme.palette.action.hover,
-            },
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
-      )}
+      {/* Always show hamburger menu */}
+      <IconButton
+        color="inherit"
+        aria-label="open drawer"
+        edge="start"
+        onClick={handleDrawerToggle}
+        sx={{
+          position: "fixed",
+          top: 8,
+          left: 15,
+          zIndex: 1199,
+          backgroundColor: theme.palette.background.paper,
+          "&:hover": {
+            backgroundColor: theme.palette.action.hover,
+          },
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
 
-      {/* Mobile drawer */}
-      {isMobile ? (
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: width,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      ) : (
-        <Drawer
-          variant="permanent"
-          sx={{
+      {/* Drawer for both mobile and desktop */}
+      <Drawer
+        variant="persistent"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        sx={{
+          display: { xs: "block", md: "block" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
             width: width,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: width,
-              boxSizing: "border-box",
-              border: "none",
-            },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      )}
+            border: "none",
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
     </>
   );
 };

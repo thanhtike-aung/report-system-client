@@ -142,11 +142,11 @@ const ProjectList: React.FC = () => {
   }
 
   return (
-    <Card className="max-w-5xl w-full mx-auto">
-      <CardHeader className="font-semibold text-xl">
+    <div className="max-w-5xl w-full mx-auto my-7">
+      <h2 className="font-semibold text-xl mb-7">
         Projects ({projects?.length})
-      </CardHeader>
-      <CardContent>
+      </h2>
+      <div>
         {projects ? (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-9">
             {projects.map((project) => (
@@ -170,8 +170,8 @@ const ProjectList: React.FC = () => {
         ) : (
           <Label className="text-red-500">Something went wrong!</Label>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
