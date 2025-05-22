@@ -24,12 +24,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Task } from "@/types/report";
 import { decodeJWT } from "@/utils/jwt";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useGetProjectsQuery } from "@/redux/apiServices/project";
 import { FULL_WORKING_TIME, GRAY_COLOR, HALF_WORKING_TIME } from "@/constants";
 import {
-  attendanceApi,
   useGetAttendanceByIdAndDateQuery,
 } from "@/redux/apiServices/attendance";
 import { format } from "date-fns";

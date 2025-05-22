@@ -2,7 +2,7 @@ import type React from "react";
 
 import { useState } from "react";
 import type { Column } from "@tanstack/react-table";
-import { CalendarIcon, Check, ListFilter, PlusCircle, X } from "lucide-react";
+import { Check, ListFilter, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -14,8 +14,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
 
 interface MultiSelectFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;

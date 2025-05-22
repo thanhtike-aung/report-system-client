@@ -36,9 +36,9 @@ const ReportList: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aiResponse, setAiResponse] = useState<any>(null);
-  const [test, setTest] = useState<any>(null);
+  const [setTest] = useState<any>(null);
 
-  const { data, isLoading, isSuccess } = useGetReportsByIdAndWeekAgoQuery(
+  const { data, isSuccess } = useGetReportsByIdAndWeekAgoQuery(
     currentUser.id
   );
 
@@ -49,7 +49,6 @@ const ReportList: React.FC = () => {
       try {
         const {
           data: aiData,
-          loading: isAiLoading,
           success: isAiResponseSuccess,
         } = await chatCompletion(
           `Can you summarize reports for a week. Response with simple short list with only json format that can be parse like "reports: [{project: '', tasks: [{title: '', description: ''}]}]. Following is the reports for this week in json format.${JSON.stringify(formattedReports)}`

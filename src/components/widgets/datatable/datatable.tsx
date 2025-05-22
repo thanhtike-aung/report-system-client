@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { flexRender, Table as ReactTableType } from "@tanstack/react-table";
 import { DataTablePagination } from "./pagination";
+import { User } from "@/types/user";
 
 interface CommonDataTableProps<TData> {
   table: ReactTableType<TData>;
@@ -20,6 +21,7 @@ const DataTable = <TData,>({
   columnsLength,
   isUseInactiveStyle,
 }: CommonDataTableProps<TData>) => {
+  console.log(table.getRowModel().rows);
   return (
     <div className="space-y-4">
       <div className="rounded-md overflow-hidden border">
@@ -50,7 +52,7 @@ const DataTable = <TData,>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className={
-                    isUseInactiveStyle && !row.original.is_active
+                    isUseInactiveStyle && !(row.original as User).is_active
                       ? "text-[#999999] h-[50px]"
                       : "h-[50px]"
                   }

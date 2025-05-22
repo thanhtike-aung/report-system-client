@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { SketchPicker, ColorResult, TwitterPicker } from "react-color";
+import { ColorResult, TwitterPicker } from "react-color";
 
 type ColorPickerProps = {
   color?: string;

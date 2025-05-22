@@ -191,7 +191,6 @@ export default function SelfAttendanceForm() {
     workingTime,
     workspace,
     project,
-    reportedBy,
     leavePeriod,
     leaveReason,
     isLate,

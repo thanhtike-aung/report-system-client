@@ -1,16 +1,14 @@
 import { useState } from "react";
-import { Check, ChevronRight, X } from "lucide-react";
+import { Check, ChevronRight} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
 interface Props {

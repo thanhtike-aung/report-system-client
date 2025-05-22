@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Fingerprint, KeyRound, Loader2 } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 import { MESSAGE } from "@/constants/messages";
 import { useLoginMutation } from "@/redux/apiServices/auth";
 import { useNavigate } from "react-router-dom";
