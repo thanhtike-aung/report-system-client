@@ -2,8 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "http://18.139.116.51:5000/:path*",
-      "permanent": true
+      "destination": "http://18.139.116.51:5000/:path*"
     },
     {
       "source": "/(.*)",
