@@ -21,7 +21,6 @@ const DataTable = <TData,>({
   columnsLength,
   isUseInactiveStyle,
 }: CommonDataTableProps<TData>) => {
-  console.log(table.getRowModel().rows);
   return (
     <div className="space-y-4">
       <div className="rounded-md overflow-hidden border">

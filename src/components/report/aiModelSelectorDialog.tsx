@@ -25,7 +25,7 @@ const models: AIModel[] = [
   {
     id: "gemini",
     name: "Gemini",
-    available: true,
+    available: false,
     description:
       "Google's multimodal AI model with strong reasoning capabilities",
     icon: "/ai_models/gemini.svg",
@@ -65,11 +65,6 @@ export function AIModelSelector({
     }
   };
 
-  // useEffect(() => {
-  //   if (!selectedModel) return;
-
-  // }, [selectedModel]);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -81,7 +76,9 @@ export function AIModelSelector({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Select an AI Model<Badge className="ml-1.5">Beta</Badge></DialogTitle>
+          <DialogTitle>
+            Select an AI Model<Badge className="ml-1.5">Beta</Badge>
+          </DialogTitle>
           <DialogDescription>
             Choose an AI model to process your content
           </DialogDescription>

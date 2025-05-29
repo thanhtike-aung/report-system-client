@@ -28,9 +28,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useGetProjectsQuery } from "@/redux/apiServices/project";
 import { FULL_WORKING_TIME, GRAY_COLOR, HALF_WORKING_TIME } from "@/constants";
-import {
-  useGetAttendanceByIdAndDateQuery,
-} from "@/redux/apiServices/attendance";
+import { useGetAttendanceByIdAndDateQuery } from "@/redux/apiServices/attendance";
 import { format } from "date-fns";
 import { TYPE } from "@/constants/attendance";
 import { useCreateReportMutation } from "@/redux/apiServices/report";
@@ -456,35 +454,40 @@ const ReportCreateForm = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
-      <div
-        className="bg-gradient-to-r rounded-2xl p-6 shadow-lg text-white"
-        style={{
-          backgroundImage: `linear-gradient(to right, ${headBannerColor.from}, ${headBannerColor.to})`,
-        }}
-      >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <BarChart3 className="h-6 w-6" />
-            Today&apos;s Progress ({tasks.length})
-          </h2>
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            <span className="font-medium">{remainingHours} hrs remaining</span>
+      {/* Progress Preview */}
+      <div className="sticky top-4 z-10 mb-8">
+        <div
+          className="bg-gradient-to-r rounded-2xl p-6 shadow-lg text-white"
+          style={{
+            backgroundImage: `linear-gradient(to right, ${headBannerColor.from}, ${headBannerColor.to})`,
+          }}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              <BarChart3 className="h-6 w-6" />
+              Today&apos;s Progress ({tasks.length})
+            </h2>
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              <span className="font-medium">
+                {remainingHours} hrs remaining
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Progress: {Math.round(hoursPercentage)}%</span>
-            <span>
-              {totalHours}/{workingTime} hours
-            </span>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Progress: {Math.round(hoursPercentage)}%</span>
+              <span>
+                {totalHours}/{workingTime} hours
+              </span>
+            </div>
+            <Progress
+              value={animateProgress ? hoursPercentage : 0}
+              className="h-2 bg-white/30"
+              indicatorClassName="bg-white transition-all duration-1000 ease-in-out"
+            />
           </div>
-          <Progress
-            value={animateProgress ? hoursPercentage : 0}
-            className="h-2 bg-white/30"
-            indicatorClassName="bg-white transition-all duration-1000 ease-in-out"
-          />
         </div>
       </div>
 

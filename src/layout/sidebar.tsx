@@ -24,6 +24,7 @@ import {
   PersonAdd,
   Menu as MenuIcon,
   ChevronLeft,
+  ChevronRight,
   ExpandLess,
   ExpandMore,
   WbSunny,
@@ -69,13 +70,19 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const SidebarContainer = styled(Box)({
-  display: "flex",
-  borderRight: "1px solid #c5c7c7",
-  flexDirection: "column",
-  height: "100%",
-  overflow: "hidden",
-});
+const SidebarContainer = styled(Box)<{ isExpanded: boolean }>(
+  ({ isExpanded, theme }) => ({
+    display: "flex",
+    borderRight: "1px solid #c5c7c7",
+    flexDirection: "column",
+    height: "100%",
+    overflow: "hidden",
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  })
+);
 
 const MenuContainer = styled(Box)({
   flex: 1,
@@ -92,13 +99,16 @@ const MenuContainer = styled(Box)({
 
 interface SidebarProps {
   width?: number;
+  miniWidth?: number;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  width = 270,
+  miniWidth = 65,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  // Set initial state: open on desktop, closed on mobile
-  const [mobileOpen, setMobileOpen] = useState<boolean>(() => !isMobile);
+  const [isExpanded, setIsExpanded] = useState<boolean>(() => !isMobile);
   const [openMorning, setOpenMorning] = useState<boolean>(false);
   const [openEvening, setOpenEvening] = useState<boolean>(false);
 
@@ -109,64 +119,69 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
   const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    setIsExpanded(!isExpanded);
   };
 
-  // Show close button on all screen sizes
   const drawer = (
-    <SidebarContainer>
-      {/* Absolutely positioned close button */}
-      <IconButton
-        onClick={handleDrawerToggle}
+    <SidebarContainer isExpanded={isExpanded}>
+      <Logo
         sx={{
-          position: "absolute",
-          top: 300,
-          right: 8,
-          zIndex: 1301,
-          background: "white",
-          boxShadow: 1,
-          "&:hover": { background: "#f0f0f0" },
+          minHeight: 64,
+          justifyContent: isExpanded ? "flex-start" : "center",
+          px: isExpanded ? 2 : 1,
         }}
-        size="small"
       >
-        <ChevronLeft />
-      </IconButton>
-
-      {/* Remove DrawerHeader if not needed */}
-      {/* <DrawerHeader /> */}
-
-      <Logo sx={{ minHeight: 64 }}>
         <LogoIcon>M</LogoIcon>
-        <Typography
-          variant="h6"
-          component="div"
-          fontWeight="bold"
-          noWrap
-          sx={{
-            fontSize: "1.7rem",
-            background: "url('/pattern-bg.jpg') center",
-            backgroundSize: "cover",
-            backgroundClip: "text",
-            color: "transparent",
-            animation: "bg-animate 10s linear infinite",
-          }}
-        >
-          MTM-Dev02
-        </Typography>
+        {isExpanded && (
+          <Typography
+            variant="h6"
+            component="div"
+            fontWeight="bold"
+            noWrap
+            sx={{
+              fontSize: "1.7rem",
+              background: "url('/pattern-bg.jpg') center",
+              backgroundSize: "cover",
+              backgroundClip: "text",
+              color: "transparent",
+              animation: "bg-animate 10s linear infinite",
+            }}
+          >
+            MTM-Dev02
+          </Typography>
+        )}
       </Logo>
 
       <MenuContainer>
-        <SectionTitle>REPORTING</SectionTitle>
+        {isExpanded && <SectionTitle>REPORTING</SectionTitle>}
         <List disablePadding>
           {/* Morning Attendance Reporting */}
-          <ListItemButton onClick={() => setOpenMorning(!openMorning)}>
-            <ListItemIcon sx={{ minWidth: 0, mr: 1, justifyContent: "center" }}>
+          <ListItemButton
+            onClick={() => setOpenMorning(!openMorning)}
+            sx={{
+              minHeight: 48,
+              justifyContent: isExpanded ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: isExpanded ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
               <WbSunny />
             </ListItemIcon>
-            <ListItemText primary="Morning Attendance" />
-            {openMorning ? <ExpandLess /> : <ExpandMore />}
+            {isExpanded && (
+              <>
+                <ListItemText primary="Morning Attendance" />
+                {openMorning ? <ExpandLess /> : <ExpandMore />}
+              </>
+            )}
           </ListItemButton>
-          {openMorning && (
+
+          {isExpanded && openMorning && (
             <List component="div" disablePadding>
               <ListItem disablePadding>
                 <ListItemButton
@@ -257,14 +272,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
           )}
 
           {/* Evening Reporting */}
-          <ListItemButton onClick={() => setOpenEvening(!openEvening)}>
-            <ListItemIcon sx={{ minWidth: 0, mr: 1, justifyContent: "center" }}>
+          <ListItemButton
+            onClick={() => setOpenEvening(!openEvening)}
+            sx={{
+              minHeight: 48,
+              justifyContent: isExpanded ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: isExpanded ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
               <Brightness4 />
             </ListItemIcon>
-            <ListItemText primary="Evening Reporting" />
-            {openEvening ? <ExpandLess /> : <ExpandMore />}
+            {isExpanded && (
+              <>
+                <ListItemText primary="Evening Reporting" />
+                {openEvening ? <ExpandLess /> : <ExpandMore />}
+              </>
+            )}
           </ListItemButton>
-          {openEvening && (
+
+          {isExpanded && openEvening && (
             <List component="div" disablePadding>
               <ListItem disablePadding>
                 <ListItemButton
@@ -327,14 +360,42 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
           )}
         </List>
 
-        <SectionTitle sx={{ mt: 2 }}>PROJECT</SectionTitle>
+        {isExpanded && <SectionTitle sx={{ mt: 2 }}>PROJECT</SectionTitle>}
         <List disablePadding>
-          <ListItem disablePadding>
+          <ListItemButton
+            selected={location.pathname === "/projects"}
+            onClick={() => navigate("/projects")}
+            sx={{
+              minHeight: 48,
+              justifyContent: isExpanded ? "initial" : "center",
+              px: 2.5,
+              "&.Mui-selected": {
+                backgroundColor: "#d9e6ff",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "#cad5eb !important",
+              },
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: isExpanded ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <Work />
+            </ListItemIcon>
+            {isExpanded && <ListItemText primary="Projects List" />}
+          </ListItemButton>
+
+          {currentUser.role !== USER_ROLES.MEMBER && (
             <ListItemButton
-              selected={location.pathname === "/projects"}
-              onClick={() => navigate("/projects")}
+              selected={location.pathname === "/projects/add"}
+              onClick={() => navigate("/projects/add")}
               sx={{
                 minHeight: 48,
+                justifyContent: isExpanded ? "initial" : "center",
                 px: 2.5,
                 "&.Mui-selected": {
                   backgroundColor: "#d9e6ff",
@@ -347,54 +408,53 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: 3,
+                  mr: isExpanded ? 3 : "auto",
                   justifyContent: "center",
                 }}
               >
-                <Work />
+                <Add />
               </ListItemIcon>
-              <ListItemText primary="Projects List" />
+              {isExpanded && <ListItemText primary="Add Project" />}
             </ListItemButton>
-          </ListItem>
-          {currentUser.role !== USER_ROLES.MEMBER && (
-            <ListItem disablePadding>
-              <ListItemButton
-                selected={location.pathname === "/projects/add"}
-                onClick={() => navigate("/projects/add")}
-                sx={{
-                  minHeight: 48,
-                  px: 2.5,
-                  "&.Mui-selected": {
-                    backgroundColor: "#d9e6ff",
-                  },
-                  "&.Mui-selected:hover": {
-                    backgroundColor: "#cad5eb !important",
-                  },
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: 3,
-                    justifyContent: "center",
-                  }}
-                >
-                  <Add />
-                </ListItemIcon>
-                <ListItemText primary="Add Project" />
-              </ListItemButton>
-            </ListItem>
           )}
         </List>
 
-        <SectionTitle sx={{ mt: 2 }}>MEMBER</SectionTitle>
+        {isExpanded && <SectionTitle sx={{ mt: 2 }}>MEMBER</SectionTitle>}
         <List disablePadding>
-          <ListItem disablePadding>
+          <ListItemButton
+            selected={location.pathname === "/members"}
+            onClick={() => navigate("/members")}
+            sx={{
+              minHeight: 48,
+              justifyContent: isExpanded ? "initial" : "center",
+              px: 2.5,
+              "&.Mui-selected": {
+                backgroundColor: "#d9e6ff",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "#cad5eb !important",
+              },
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: isExpanded ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <Group />
+            </ListItemIcon>
+            {isExpanded && <ListItemText primary="Members List" />}
+          </ListItemButton>
+
+          {currentUser.role !== USER_ROLES.MEMBER && (
             <ListItemButton
-              selected={location.pathname === "/members"}
-              onClick={() => navigate("/members")}
+              selected={location.pathname === "/members/add"}
+              onClick={() => navigate("/members/add")}
               sx={{
                 minHeight: 48,
+                justifyContent: isExpanded ? "initial" : "center",
                 px: 2.5,
                 "&.Mui-selected": {
                   backgroundColor: "#d9e6ff",
@@ -407,74 +467,48 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: 3,
+                  mr: isExpanded ? 3 : "auto",
                   justifyContent: "center",
                 }}
               >
-                <Group />
+                <PersonAdd />
               </ListItemIcon>
-              <ListItemText primary="Members List" />
+              {isExpanded && <ListItemText primary="Add Member" />}
             </ListItemButton>
-          </ListItem>
-          {currentUser.role !== USER_ROLES.MEMBER && (
-            <ListItem disablePadding>
-              <ListItemButton
-                selected={location.pathname === "/members/add"}
-                onClick={() => navigate("/members/add")}
-                sx={{
-                  minHeight: 48,
-                  px: 2.5,
-                  "&.Mui-selected": {
-                    backgroundColor: "#d9e6ff",
-                  },
-                  "&.Mui-selected:hover": {
-                    backgroundColor: "#cad5eb !important",
-                  },
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: 3,
-                    justifyContent: "center",
-                  }}
-                >
-                  <PersonAdd />
-                </ListItemIcon>
-                <ListItemText primary="Add Member" />
-              </ListItemButton>
-            </ListItem>
           )}
         </List>
 
         {/* Event */}
-        <SectionTitle sx={{ mt: 2 }}>EVENT</SectionTitle>
+        {isExpanded && <SectionTitle sx={{ mt: 2 }}>EVENT</SectionTitle>}
 
         {/* Knowledge Sharing */}
         <List disablePadding>
-          <ListItem disablePadding>
-            <ListItemButton
-              selected={location.pathname === "/event/knowledgesharings"}
-              onClick={() => navigate("/event/knowledgesharings")}
+          <ListItemButton
+            selected={location.pathname === "/event/knowledgesharings"}
+            onClick={() => navigate("/event/knowledgesharings")}
+            sx={{
+              minHeight: 48,
+              justifyContent: isExpanded ? "initial" : "center",
+              px: 2.5,
+              "&.Mui-selected": {
+                backgroundColor: "#d9e6ff",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "#cad5eb !important",
+              },
+            }}
+          >
+            <ListItemIcon
               sx={{
-                minHeight: 48,
-                px: 2.5,
-                "&.Mui-selected": {
-                  backgroundColor: "#d9e6ff",
-                },
-                "&.Mui-selected:hover": {
-                  backgroundColor: "#cad5eb !important",
-                },
+                minWidth: 0,
+                mr: isExpanded ? 3 : "auto",
+                justifyContent: "center",
               }}
             >
-              <ListItemIcon
-                sx={{ minWidth: 0, mr: 3, justifyContent: "center" }}
-              >
-                <Forum />
-              </ListItemIcon>
-              <ListItemText primary="Knowledge Sharing" />
-            </ListItemButton>
-          </ListItem>
+              <Forum />
+            </ListItemIcon>
+            {isExpanded && <ListItemText primary="Knowledge Sharing" />}
+          </ListItemButton>
         </List>
 
         {/* Game & Various Events */}
@@ -502,55 +536,71 @@ export const Sidebar: React.FC<SidebarProps> = ({ width = 250 }) => {
         </List> */}
       </MenuContainer>
 
-      {/* Profile section */}
-      <ProfileSection
-        userName={currentUser?.name}
-        userRole={currentUser?.role}
-      />
+      {/* Profile section when expanded */}
+      {isExpanded && (
+        <ProfileSection
+          userName={currentUser?.name}
+          userRole={currentUser?.role}
+        />
+      )}
+
+      {/* Toggle button */}
+      <Box
+        sx={{
+          ...(isExpanded
+            ? {
+                position: "absolute",
+                right: 1,
+                top: "50%",
+                transform: "translateY(-50%)",
+                // borderLeft: '1px solid #c5c7c7',
+                // borderRadius: '4px 0 0 4px',
+                borderRadius: "50%",
+              }
+            : {
+                borderTop: "1px solid #c5c7c7",
+                display: "flex",
+                justifyContent: "center",
+                p: 1,
+              }),
+        }}
+      >
+        <IconButton
+          onClick={handleDrawerToggle}
+          size="small"
+          sx={{
+            backgroundColor: theme.palette.background.paper,
+            "&:hover": { backgroundColor: theme.palette.action.hover },
+            ...(isExpanded && {
+              borderRadius: "4px 0 0 4px",
+            }),
+          }}
+        >
+          {isExpanded ? <ChevronLeft /> : <ChevronRight />}
+        </IconButton>
+      </Box>
     </SidebarContainer>
   );
 
   return (
-    <>
-      {/* Always show hamburger menu */}
-      <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        edge="start"
-        onClick={handleDrawerToggle}
-        sx={{
-          position: "fixed",
-          top: 8,
-          left: 15,
-          zIndex: 1199,
-          backgroundColor: theme.palette.background.paper,
-          "&:hover": {
-            backgroundColor: theme.palette.action.hover,
-          },
-        }}
-      >
-        <MenuIcon />
-      </IconButton>
-
-      {/* Drawer for both mobile and desktop */}
-      <Drawer
-        variant="persistent"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          display: { xs: "block", md: "block" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: width,
-            border: "none",
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
-    </>
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: isExpanded ? width : miniWidth,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: isExpanded ? width : miniWidth,
+          boxSizing: "border-box",
+          border: "none",
+          overflowX: "hidden",
+          transition: theme.transitions.create("width", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        },
+      }}
+    >
+      {drawer}
+    </Drawer>
   );
 };
