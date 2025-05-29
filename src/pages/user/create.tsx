@@ -349,8 +349,7 @@ const MemberCreateForm: React.FC = () => {
 
               {(formData.role === "manager" ||
                 formData.role === "bse" ||
-                formData.role === "leader" ||
-                formData.role === "subleader") && (
+                formData.role === "leader") && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-1">
                   <div className="space-y-2">
                     <Label htmlFor="workflowsUrl">
