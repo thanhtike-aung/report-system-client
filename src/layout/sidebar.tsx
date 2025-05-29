@@ -22,7 +22,6 @@ import {
   Work,
   Add,
   PersonAdd,
-  Menu as MenuIcon,
   ChevronLeft,
   ChevronRight,
   ExpandLess,
@@ -70,32 +69,22 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const SidebarContainer = styled(Box)<{ isExpanded: boolean }>(
-  ({ isExpanded, theme }) => ({
-    display: "flex",
-    borderRight: "1px solid #c5c7c7",
-    flexDirection: "column",
-    height: "100%",
-    overflow: "hidden",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  })
-);
+const SidebarContainer = styled(Box)<{ isExpanded: boolean }>(({ theme }) => ({
+  display: "flex",
+  borderRight: "1px solid #c5c7c7",
+  flexDirection: "column",
+  height: "100%",
+  overflow: "hidden",
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+}));
 
 const MenuContainer = styled(Box)({
   flex: 1,
   overflowY: "auto",
 });
-
-// const DrawerHeader = styled("div")(({ theme }) => ({
-//   display: "flex",
-//   alignItems: "center",
-//   justifyContent: "flex-end",
-//   padding: theme.spacing(0, 1),
-//   ...theme.mixins.toolbar,
-// }));
 
 interface SidebarProps {
   width?: number;
@@ -140,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             noWrap
             sx={{
               fontSize: "1.7rem",
-              background: "url('/pattern-bg.jpg') center",
+              background: "url('/pattern02.jpg') center",
               backgroundSize: "cover",
               backgroundClip: "text",
               color: "transparent",

@@ -1,8 +1,6 @@
 import { useGetUsersQuery } from "@/redux/apiServices/user";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { RootState } from "@/redux/store";
-import { MESSAGE } from "@/constants/messages";
 import useToast from "@/hooks/useToast";
 import Error500 from "@/components/error/500";
 import {
@@ -33,8 +31,6 @@ const MemberList = () => {
   const { data: users, isLoading } = useGetUsersQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-  const { showSuccess } = useToast();
-  const dispatch = useDispatch();
   const supervisors = Array.from(
     new Set(users && users.map((item) => item.supervisor?.name).filter(Boolean))
   ) as string[];
