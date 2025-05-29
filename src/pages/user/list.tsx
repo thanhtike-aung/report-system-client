@@ -1,9 +1,8 @@
 import { useGetUsersQuery } from "@/redux/apiServices/user";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { MESSAGE } from "@/constants/messages";
-import { setIsUserUpdateSuccess } from "@/redux/slices/user/userSlice";
 import useToast from "@/hooks/useToast";
 import Error500 from "@/components/error/500";
 import {
@@ -34,23 +33,11 @@ const MemberList = () => {
   const { data: users, isLoading } = useGetUsersQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-  const isUserUpdateSuccess = useSelector(
-    (state: RootState) => state.userUpdate.isUserUpdateSuccess
-  );
   const { showSuccess } = useToast();
   const dispatch = useDispatch();
   const supervisors = Array.from(
     new Set(users && users.map((item) => item.supervisor?.name).filter(Boolean))
   ) as string[];
-
-  useEffect(() => {
-    if (!isUserUpdateSuccess) return;
-    showSuccess(`Member ${MESSAGE.SUCCESS.UPDATED}`, {
-      onClose: () => {
-        dispatch(setIsUserUpdateSuccess(false));
-      },
-    });
-  }, [isUserUpdateSuccess]);
 
   const table = useReactTable({
     data: users || [],

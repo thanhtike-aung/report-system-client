@@ -31,10 +31,8 @@ const LayoutView: React.FC<props> = ({ date }) => {
   const [selectedMemberReports, setSelectedMemberReports] = useState<
     Report[] | null
   >(null);
-  const {
-    data: reportSenders,
-    isSuccess,
-  } = useGetAuthorizedReportersWithUsersAndReportsQuery();
+  const { data: reportSenders, isSuccess } =
+    useGetAuthorizedReportersWithUsersAndReportsQuery();
   const reportContainerRef = useRef<HTMLDivElement>(null);
 
   const handleTeamSelect = (team: TeamData) => {

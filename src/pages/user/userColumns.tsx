@@ -19,15 +19,13 @@ import {
 import { AuthorizeSenderConfirmDialog } from "@/components/user/authorizeSenderConfirmDialog";
 import { PersonOff } from "@mui/icons-material";
 
-// Helper components for action buttons
 const EditButton = ({ onClick }: { onClick: () => void }) => (
   <Button
     variant="ghost"
-    size="sm"
-    className="p-1 custom-animate-button"
+    className="p-1 !border-none transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:bg-transparent"
     onClick={onClick}
   >
-    <Settings className="h-4 w-4" />
+    <Settings className="!h-5 !w-5" />
     <span className="sr-only">Edit</span>
   </Button>
 );
@@ -36,10 +34,10 @@ const DeactivateButton = ({ onClick }: { onClick: () => void }) => (
   <Button
     variant="ghost"
     size="sm"
-    className="p-1 custom-animate-button"
+    className="p-1 !border-none transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:bg-transparent"
     onClick={onClick}
   >
-    <PersonOff sx={{ width: "20px" }} />
+    <PersonOff sx={{ width: "23px" }} />
     <span className="sr-only">Inactive</span>
   </Button>
 );
@@ -48,10 +46,10 @@ const DeleteButton = ({ onClick }: { onClick: () => void }) => (
   <Button
     variant="ghost"
     size="sm"
-    className="p-1 custom-animate-button"
+    className="p-1 !border-none transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:bg-transparent"
     onClick={onClick}
   >
-    <Trash2 className="h-4 w-4" />
+    <Trash2 className="!h-5 !w-5" />
     <span className="sr-only">Delete</span>
   </Button>
 );
@@ -68,7 +66,7 @@ const AuthorizeButton = ({
       <Button
         variant="ghost"
         size="sm"
-        className="p-1 custom-animate-button"
+        className="p-1 !border-none transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:bg-transparent"
         onClick={onClick}
       >
         {canReport ? (
@@ -184,6 +182,8 @@ export const userColumns: ColumnDef<User>[] = [
       // Show edit/deactivate/delete for MANAGER or supervisor
       const canEditOrDeactivate =
         currentUser.role === USER_ROLES.MANAGER ||
+        (currentUser.supervisorRole === USER_ROLES.MANAGER &&
+          currentUser.id === user.id) ||
         user.supervisor_id === currentUser.id;
 
       return (

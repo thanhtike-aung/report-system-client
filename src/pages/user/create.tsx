@@ -143,8 +143,7 @@ const MemberCreateForm: React.FC = () => {
       !formData.email ||
       !formData.password ||
       !formData.role ||
-      !formData.projectId ||
-      (formData.role === "bse" && !formData.workflowsUrl)
+      !formData.projectId
     ) {
       return true;
     }

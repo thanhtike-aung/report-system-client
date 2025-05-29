@@ -123,7 +123,7 @@ const MemberEditForm: React.FC = () => {
   const { data: projects } = useGetProjectsQuery();
   const [updateUserMutation, { isSuccess, isLoading, isError }] =
     useUpdateUserMutation();
-  const { showError } = useToast();
+  const toast = useToast();
 
   const isDisabled = (): boolean => {
     if (
@@ -183,15 +183,18 @@ const MemberEditForm: React.FC = () => {
 
   useEffect(() => {
     if (isError) {
-      showError(MESSAGE.ERROR.UNKNOWN_ERROR);
+      toast.showError(MESSAGE.ERROR.UNKNOWN_ERROR);
       return;
     }
   }, [isError]);
 
   useEffect(() => {
     if (!isSuccess) return;
-    dispatch(setIsUserUpdateSuccess(true));
-    navigate("/members");
+    toast.showSuccess(`Member ${MESSAGE.SUCCESS.UPDATED}`, {
+      onClose: () => {
+        navigate("/members");
+      },
+    });
   }, [isSuccess]);
 
   return (

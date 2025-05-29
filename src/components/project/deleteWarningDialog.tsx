@@ -23,7 +23,9 @@ export function DeleteWarningDialog({
 }: DeleteWarningDialogProps) {
   if (!project) return null; // Avoid rendering if no project is provided
 
-  const activeUsers = project.users ? project.users.filter((user) => user.id !== ROOT_ADMIN_ID) : [];
+  const activeUsers = project.users
+    ? project.users.filter((user) => user.id !== ROOT_ADMIN_ID)
+    : [];
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
