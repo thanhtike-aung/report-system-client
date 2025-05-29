@@ -31,7 +31,6 @@ import { useGetProjectsQuery } from "@/redux/apiServices/project";
 import { useNavigate, useParams } from "react-router-dom";
 import SkeletonEditForm from "./editSkeleton";
 import { useDispatch } from "react-redux";
-import { setIsUserUpdateSuccess } from "@/redux/slices/user/userSlice";
 import useToast from "@/hooks/useToast";
 import { Switch } from "@/components/ui/switch";
 import {
