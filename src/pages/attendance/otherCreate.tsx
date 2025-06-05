@@ -147,7 +147,7 @@ export default function OtherAttendanceForm() {
     if (!currentUser) return;
 
     // get all users except current logged-in user for memeber select box
-    get(`${import.meta.env.VITE_API_URL}/users/not/${currentUser.id}`)
+    get(`${import.meta.env.VITE_VERCEL_API_URL}/users/not/${currentUser.id}`)
       .then((data) => {
         setUsers(data);
       })
