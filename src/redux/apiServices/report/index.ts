@@ -23,6 +23,9 @@ export const reportApi = createApi({
     getReportsByIdAndWeekAgo: builder.query<Report[], number>({
       query: (id) => `reports/weekago/${id}`,
     }),
+    getTodayReport: builder.query<Report[], { userId: number; status: string }>({
+      query: ({ userId, status }) => `reports/today?userId=${userId}&status=${status}`,
+    }),
     createReport: builder.mutation<any, any>({
       query: (body) => ({
         url: "reports",
@@ -32,7 +35,7 @@ export const reportApi = createApi({
     }),
     updateReport: builder.mutation<any, any>({
       query: ({ id, body }) => ({
-        url: `posts/${id}`,
+        url: `reports/${id}`,
         method: "PATCH",
         body,
       }),
@@ -44,6 +47,7 @@ export const {
   useGetReportsQuery,
   useGetReportByIdQuery,
   useGetReportsByIdAndWeekAgoQuery,
+  useGetTodayReportQuery,
   useCreateReportMutation,
   useUpdateReportMutation,
 } = reportApi;

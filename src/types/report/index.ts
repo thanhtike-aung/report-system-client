@@ -4,10 +4,11 @@ export interface Report {
   task_title: string;
   task_description: string;
   progress: number;
-  man_hour: number;
+  man_hours: number;
   working_time: number;
   updated_at: string;
   user_id: number;
+  status: string;
 }
 
 export interface Task {

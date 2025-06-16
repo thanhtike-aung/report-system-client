@@ -92,7 +92,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  width = 270,
+  width = 275,
   miniWidth = 65,
 }) => {
   const theme = useTheme();

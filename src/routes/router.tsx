@@ -10,6 +10,7 @@ import KnowledgeSharingList from "@/pages/event/knowledgesharing/list";
 import ProjectCreateForm from "@/pages/project/create";
 import ProjectList from "@/pages/project/list";
 import TaskReportForm from "@/pages/report/create";
+import ReportEditForm from "@/pages/report/edit";
 import ReportList from "@/pages/report/list";
 import MemberCreateForm from "@/pages/user/create";
 import MemberEditForm from "@/pages/user/edit";
@@ -50,6 +51,10 @@ const AppRoutes: React.FC = () => {
                   {/* report */}
                   <Route path="/reports/add" element={<TaskReportForm />} />
                   <Route path="/reports" element={<ReportList />} />
+                  <Route
+                    path="/reports/:userId/edit"
+                    element={<ReportEditForm />}
+                  />
 
                   {/* user */}
                   <Route path="/members/add" element={<MemberCreateForm />} />
