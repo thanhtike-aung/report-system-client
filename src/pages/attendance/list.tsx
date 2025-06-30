@@ -15,9 +15,9 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import InputFilter from "@/components/widgets/datatable/input-filter";
-import MultiSelectFilter from "@/components/widgets/datatable/multiselect-filter";
-import ColumnFilter from "@/components/widgets/datatable/column-filter";
+// import InputFilter from "@/components/widgets/datatable/input-filter";
+// import MultiSelectFilter from "@/components/widgets/datatable/multiselect-filter";
+// import ColumnFilter from "@/components/widgets/datatable/column-filter";
 import DataTable from "@/components/widgets/datatable/datatable";
 import GeneralError from "@/components/error/general";
 import { Attendance } from "@/types/attendance";
@@ -134,14 +134,14 @@ const AttendanceList: React.FC = () => {
     },
   });
 
-  const getColumnValues = (items: Array<Record<string, any>>, key: string) => {
-    return items
-      .map((item) => item[key])
-      .filter(
-        (value, index, self) =>
-          index === self.findIndex((v) => v.id === value.id)
-      );
-  };
+  // const getColumnValues = (items: Array<Record<string, any>>, key: string) => {
+  //   return items
+  //     .map((item) => item[key])
+  //     .filter(
+  //       (value, index, self) =>
+  //         index === self.findIndex((v) => v.id === value.id)
+  //     );
+  // };
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
