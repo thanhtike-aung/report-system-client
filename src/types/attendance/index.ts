@@ -8,6 +8,7 @@ export interface Attendance {
   workspace: Workspace;
   project: Project;
   leave_period: LeavePeriod;
+  leave_reason: LeaveReason;
   late_minute: number;
   reported_by: number;
   reporter: User;
