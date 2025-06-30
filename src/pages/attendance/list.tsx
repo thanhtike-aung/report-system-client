@@ -24,6 +24,14 @@ import { Attendance } from "@/types/attendance";
 import { useGetAttendancesQuery } from "@/redux/apiServices/attendance";
 import AttendanceListSkeleton from "./listSkeleton";
 import DateFilter from "@/components/widgets/date-filter";
+import { Button } from "@/components/ui/button";
+import { CloudUpload } from "lucide-react";
+import { decodeJWT } from "@/utils/jwt";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { USER_ROLES } from "@/constants";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AdaptiveCardView from "@/components/attendance/adaptiveCardView";
 
 const attendanceListColumns: ColumnDef<Attendance>[] = [
   {
@@ -60,6 +68,10 @@ const attendanceListColumns: ColumnDef<Attendance>[] = [
  * Main Component
  */
 const AttendanceList: React.FC = () => {
+  const currentUser = decodeJWT(
+    useSelector((state: RootState) => state.auth.authToken)
+  );
+
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [attendancesForDay, setAttendancesForDay] = React.useState<
     Attendance[] | null
@@ -86,8 +98,20 @@ const AttendanceList: React.FC = () => {
         ...a,
         updated_at: format(parseISO(a.updated_at), "yyyy/MM/dd HH:mm"),
       }));
+    const sorted = filtered.sort((a: any, b: any) => {
+      // Put manager's attendance first
+      if (a.reporter.role === "manager" && b.reporter.role !== "manager")
+        return -1;
+      if (a.reporter.role !== "manager" && b.reporter.role === "manager")
+        return 1;
 
-    setAttendancesForDay(filtered);
+      // For non-manager attendances, sort by project name
+      const nameA = a.project ?? "";
+      const nameB = b.project ?? "";
+      return nameA.localeCompare(nameB);
+    });
+
+    setAttendancesForDay(sorted);
   }, [selectedDate, attendances]);
 
   // Table instance
@@ -140,7 +164,7 @@ const AttendanceList: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <DateFilter onDateChange={handleDateChange} />
-          <InputFilter
+          {/* <InputFilter
             column={table.getColumn("reporter_name")}
             placeholder="Filter by name..."
           />
@@ -151,12 +175,38 @@ const AttendanceList: React.FC = () => {
               label: creator.name,
               value: creator.name,
             }))}
-          />
+          /> */}
         </div>
-        <ColumnFilter table={table} />
+        {/* <ColumnFilter table={table} /> */}
+        {(currentUser.role === USER_ROLES.ROOT_ADMIN ||
+          currentUser.role === USER_ROLES.MANAGER ||
+          currentUser.role === USER_ROLES.BSE ||
+          currentUser.role === USER_ROLES.LEADER) && (
+          <Button className="bg-green-500 text-white">
+            <CloudUpload className="h-4 w-4" />
+            Manual Trigger
+          </Button>
+        )}
       </div>
 
-      <DataTable table={table} columnsLength={attendanceListColumns.length} />
+      <Tabs defaultValue="tableView" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="tableView">Table View</TabsTrigger>
+          <TabsTrigger value="msTeamsView">Microsoft Teams View</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tableView">
+          <DataTable
+            table={table}
+            columnsLength={attendanceListColumns.length}
+          />
+        </TabsContent>
+        <TabsContent value="msTeamsView">
+          <AdaptiveCardView
+            date={selectedDate}
+            attendances={attendancesForDay || []}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -16,7 +16,11 @@ export const adaptiveCardMessageApi = createApi({
     getCardMessages: builder.query<any, void>({
       query: () => "cardmessages",
     }),
+    getCardMessageByType: builder.query<any, string>({
+      query: (type) => `cardmessages/${type}`,
+    }),
   }),
 });
 
-export const { useGetCardMessagesQuery } = adaptiveCardMessageApi;
+export const { useGetCardMessagesQuery, useGetCardMessageByTypeQuery } =
+  adaptiveCardMessageApi;
