@@ -287,10 +287,11 @@ const ReportEditForm = () => {
       { id: currentUser.id, date: format(new Date(), "yyyy-MM-dd") },
       { refetchOnMountOrArgChange: true }
     );
-  const { data: todayReport, isSuccess: isTodayReportSuccess } = useGetTodayReportQuery(
-    { userId: currentUser.id, status: "pending" },
-    { refetchOnMountOrArgChange: true }
-  );
+  const { data: todayReport, isSuccess: isTodayReportSuccess } =
+    useGetTodayReportQuery(
+      { userId: currentUser.id, status: "pending" },
+      { refetchOnMountOrArgChange: true }
+    );
   const [
     updateReportMutation,
     { isLoading: isReportUpdating, isSuccess: isReportUpdateSuccess },
@@ -367,21 +368,26 @@ const ReportEditForm = () => {
 
   // Add effect to populate tasks from today's report
   useEffect(() => {
-    if (!isTodayReportSuccess || !todayReport || todayReport.length === 0) return;
-    
-    const transformedTasks = todayReport.map((report: Report, index: number) => ({
-      id: index + 1,
-      project: {
-        id: modifiedProjects?.find(p => p.name === report.project)?.id || null,
-        name: report.project,
-      },
-      title: report.task_title,
-      description: report.task_description,
-      progress: report.progress,
-      manHours: report.man_hours,
-      isExpanded: false,
-    }));
-    
+    if (!isTodayReportSuccess || !todayReport || todayReport.length === 0)
+      return;
+
+    const transformedTasks = todayReport.map(
+      (report: Report, index: number) => ({
+        id: index + 1,
+        project: {
+          id:
+            modifiedProjects?.find((p) => p.name === report.project)?.id ||
+            null,
+          name: report.project,
+        },
+        title: report.task_title,
+        description: report.task_description,
+        progress: report.progress,
+        manHours: report.man_hours,
+        isExpanded: false,
+      })
+    );
+
     setTasks(transformedTasks);
     setWorkingTime(todayReport[0].working_time);
   }, [isTodayReportSuccess, todayReport, modifiedProjects]);
@@ -549,4 +555,4 @@ const ReportEditForm = () => {
   );
 };
 
-export default ReportEditForm; 
+export default ReportEditForm;
