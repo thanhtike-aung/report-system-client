@@ -189,7 +189,7 @@ const AttendanceList: React.FC = () => {
         )}
       </div>
 
-      <Tabs defaultValue="tableView" className="w-full">
+      <Tabs defaultValue="tableView" className="w-full h-screen">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="tableView">Table View</TabsTrigger>
           <TabsTrigger value="msTeamsView">Microsoft Teams View</TabsTrigger>
