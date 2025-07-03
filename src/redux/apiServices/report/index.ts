@@ -23,9 +23,12 @@ export const reportApi = createApi({
     getReportsByIdAndWeekAgo: builder.query<Report[], number>({
       query: (id) => `reports/weekago/${id}`,
     }),
-    getTodayReport: builder.query<Report[], { userId: number; status: string }>({
-      query: ({ userId, status }) => `reports/today?userId=${userId}&status=${status}`,
-    }),
+    getTodayReport: builder.query<Report[], { userId: number; status: string }>(
+      {
+        query: ({ userId, status }) =>
+          `reports/today?userId=${userId}&status=${status}`,
+      }
+    ),
     createReport: builder.mutation<any, any>({
       query: (body) => ({
         url: "reports",

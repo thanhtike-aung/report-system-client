@@ -11,17 +11,28 @@ const determineWorkingTime = (leavePeriod: string) => {
 export const copyAttendanceWithFormat = async (
   attendances: Attendance[]
 ): Promise<boolean> => {
-  const officeAttendances = attendances
+  // sorted by manager first, then by project name
+  const sortedAttendances = attendances.sort((a: any, b: any) => {
+    if (a.reporter.role === "manager" && b.reporter.role !== "manager")
+      return -1;
+    if (a.reporter.role !== "manager" && b.reporter.role === "manager")
+      return 1;
+    const nameA = a.project ?? "";
+    const nameB = b.project ?? "";
+    return nameA.localeCompare(nameB);
+  });
+
+  const officeAttendances = sortedAttendances
     .filter(
       (attendance) =>
         attendance.type === TYPE.WORKING &&
         attendance.workspace === WORKSPACE.OFFICE
     )
     .map((attendance) => attendance);
-  const homeAttendances = attendances
+  const homeAttendances = sortedAttendances
     .filter((attendance) => attendance.workspace === WORKSPACE.HOME)
     .map((attendance) => attendance);
-  const leaveAttendances = attendances
+  const leaveAttendances = sortedAttendances
     .filter((attendance) => attendance.type === TYPE.LEAVE)
     .map((attendance) => attendance);
 
@@ -54,7 +65,7 @@ export const copyAttendanceWithFormat = async (
     lines.push("");
 
     // office attendance section
-    lines.push(`▼ オフィス勤務(${officeAttendances.length}名)`);
+    lines.push(`▼ オフィス勤務 (${officeAttendances.length}名)`);
     officeAttendances.forEach((attendance: any, index: number) =>
       lines.push(
         makeLine(index + 1, attendance.reporter.name, attendance.project)
@@ -63,9 +74,10 @@ export const copyAttendanceWithFormat = async (
     lines.push("");
 
     // home attendance section
-    lines.push(`在宅勤務(${homeAttendances.length}名)`);
+    const wfhAttendanceText =
+      homeAttendances.length === 0 ? ": 無し" : `(${homeAttendances.length}名)`;
+    lines.push(`▼ 在宅勤務 ${wfhAttendanceText}`);
     homeAttendances.forEach((attendance: any, index: number) => {
-      console.log("attendance: ", attendance);
       return lines.push(
         makeLine(
           index + 1 + officeAttendances.length,
@@ -78,7 +90,9 @@ export const copyAttendanceWithFormat = async (
     lines.push("");
 
     // leave attendance section
-    lines.push(`欠勤：${leaveAttendances.length}名`);
+    const leaveAttendanceText =
+      leaveAttendances.length === 0 ? "無し" : `${leaveAttendances.length}名`;
+    lines.push(`欠勤：${leaveAttendanceText}`);
     leaveAttendances.forEach((attendance: any, index: number) =>
       lines.push(
         `${index + 1}. ${attendance.reporter.name.padEnd(maxNameLength + 2)}(${attendance.leave_reason})${attendance.leave_period ? `【${attendance.leave_period}】` : ""}`

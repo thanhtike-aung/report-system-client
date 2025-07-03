@@ -1,6 +1,4 @@
-import {
-  useGetCardMessagesQuery,
-} from "@/redux/apiServices/adaptiveCardMessage";
+import { useGetCardMessagesQuery } from "@/redux/apiServices/adaptiveCardMessage";
 import { format, isSameDay, parseISO } from "date-fns";
 import React, { useEffect, useState } from "react";
 import AdaptiveCardRenderer from "./adaptiveCardRenderer";

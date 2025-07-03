@@ -98,20 +98,8 @@ const AttendanceList: React.FC = () => {
         ...a,
         updated_at: format(parseISO(a.updated_at), "yyyy/MM/dd HH:mm"),
       }));
-    const sorted = filtered.sort((a: any, b: any) => {
-      // Put manager's attendance first
-      if (a.reporter.role === "manager" && b.reporter.role !== "manager")
-        return -1;
-      if (a.reporter.role !== "manager" && b.reporter.role === "manager")
-        return 1;
 
-      // For non-manager attendances, sort by project name
-      const nameA = a.project ?? "";
-      const nameB = b.project ?? "";
-      return nameA.localeCompare(nameB);
-    });
-
-    setAttendancesForDay(sorted);
+    setAttendancesForDay(filtered);
   }, [selectedDate, attendances]);
 
   // Table instance

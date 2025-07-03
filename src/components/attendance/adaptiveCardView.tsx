@@ -1,4 +1,4 @@
-import { useGetCardMessagesQuery } from "@/redux/apiServices/adaptiveCardMessage";
+import { useGetCardMessageByTypeQuery } from "@/redux/apiServices/adaptiveCardMessage";
 import { User } from "@/types/user";
 import { format, isSameDay, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import useToast from "@/hooks/useToast";
 import { copyAttendanceWithFormat } from "@/utils/attendance/copyAttendnaceWithFormat";
+import AdaptiveCardViewSkeleton from "./adaptiveCardViewSkeleton";
 
 interface CardMessage {
   id: number;
@@ -39,7 +40,8 @@ const AdaptiveCardView: React.FC<{ date: Date; attendances: Attendance[] }> = ({
   const [cardMessageForDate, setCardMessageForDate] = useState<CardMessage[]>(
     []
   );
-  const { data: cardMessages, isLoading } = useGetCardMessagesQuery();
+  const { data: cardMessages, isLoading } =
+    useGetCardMessageByTypeQuery("attendance");
   const toast = useToast();
 
   useEffect(() => {
@@ -62,7 +64,7 @@ const AdaptiveCardView: React.FC<{ date: Date; attendances: Attendance[] }> = ({
     }
   };
 
-  if (isLoading) return "loading...";
+  if (isLoading) return <AdaptiveCardViewSkeleton />;
   if (!cardMessageForDate) return <Error500 />;
 
   return (
