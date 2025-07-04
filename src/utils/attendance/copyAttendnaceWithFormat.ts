@@ -61,7 +61,7 @@ export const copyAttendanceWithFormat = async (
     // header
     lines.push(`${dayjs().format("YYYY.MM.DD")} の勤怠状況を報告いたします。`);
     lines.push(`合計：${attendances.length}名`);
-    lines.push(`出勤：${officeAttendances.length}名`);
+    lines.push(`出勤：${officeAttendances.length + homeAttendances.length}名`);
     lines.push("");
 
     // office attendance section
