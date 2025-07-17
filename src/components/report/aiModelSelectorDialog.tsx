@@ -33,7 +33,7 @@ const models: AIModel[] = [
   {
     id: "mistral",
     name: "Mistral",
-    available: true,
+    available: false,
     description: "Efficient open-source language model with strong performance",
     icon: "/ai_models/mistral.svg",
   },

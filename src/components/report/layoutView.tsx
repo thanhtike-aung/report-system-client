@@ -5,14 +5,28 @@ import { Report } from "@/types/report";
 import { User } from "@/types/user";
 import { isSameDay, parseISO } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronRight, Users, X } from "lucide-react";
+import { ChevronRight, Users, X, Pencil } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { decodeJWT } from "@/utils/jwt";
+import LayoutViewSkeleton from "./layoutViewSkeleton";
+import Error500 from "../error/500";
 
 interface props {
   date: Date;
 }
 
 interface MemberData {
+  id: number;
   name: string;
   projectName: string;
   reports: Report[];
@@ -31,9 +45,18 @@ const LayoutView: React.FC<props> = ({ date }) => {
   const [selectedMemberReports, setSelectedMemberReports] = useState<
     Report[] | null
   >(null);
-  const { data: reportSenders, isSuccess } =
-    useGetAuthorizedReportersWithUsersAndReportsQuery();
+  const {
+    data: reportSenders,
+    isSuccess,
+    isLoading,
+  } = useGetAuthorizedReportersWithUsersAndReportsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const reportContainerRef = useRef<HTMLDivElement>(null);
+  const currentUser = decodeJWT(
+    useSelector((state: RootState) => state.auth.authToken)
+  );
+  const navigate = useNavigate();
 
   const handleTeamSelect = (team: TeamData) => {
     setSelectedTeam(team);
@@ -49,7 +72,7 @@ const LayoutView: React.FC<props> = ({ date }) => {
   };
 
   const getTeamColor = (index: number): string => {
-    const colors = ["bg-[#6C63FF]", "bg-[#3A86B8]", "bg-[#264653]"];
+    const colors = ["bg-[#678387]", "bg-[#3A4D8F]", "bg-[#5D9CEC]"];
     return colors[index % colors.length];
   };
 
@@ -57,12 +80,14 @@ const LayoutView: React.FC<props> = ({ date }) => {
     if (!isSuccess) return;
     const transformedUsers = reportSenders.flatMap((sender: User) => {
       const transformedSupervisor = {
+        id: sender.id,
         name: sender.name,
         projectName: sender.project?.name ?? "",
         reports: sender.reports ?? [],
       };
       const transformedSubordinates = (sender.subordinates ?? []).map(
         (subordinate: User) => ({
+          id: subordinate.id,
           name: subordinate.name,
           projectName: subordinate.project?.name ?? "",
           reports: subordinate.reports ?? [],
@@ -84,7 +109,8 @@ const LayoutView: React.FC<props> = ({ date }) => {
     setSelectedMemberReports(filteredReports);
   }, [selectedMember, date]);
 
-  if (!teamsData) return "nth";
+  if (isLoading || !teamsData) return <LayoutViewSkeleton />;
+  if (!isSuccess) return <Error500 />;
 
   return (
     <>
@@ -196,9 +222,33 @@ const LayoutView: React.FC<props> = ({ date }) => {
               className="rounded-lg bg-white p-4 shadow-md"
             >
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-800">
-                  Daily Report
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    Today's Report
+                  </h3>
+                  {selectedMember.id === currentUser.id &&
+                    selectedMemberReports?.length !== 0 && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              className="no-override custom-animate-button cursor-pointer"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                navigate(`/reports/${currentUser?.id}/edit`)
+                              }
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Edit your report</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                </div>
                 <button
                   onClick={closeMemberReport}
                   className="rounded-full p-1 text-slate-500 hover:bg-slate-100 no-override"
@@ -215,7 +265,8 @@ const LayoutView: React.FC<props> = ({ date }) => {
                   report.working_time > 0 ? (
                     <div key={report.id} className="mt-2.5">
                       <p>
-                        {index + 1})【{report.project}】{report.task_title}
+                        {index + 1})【{report.project}】{report.task_title} (
+                        {report.man_hours}hr)
                       </p>
                       {report.task_description && (
                         <span className="text-gray-500 text-sm">

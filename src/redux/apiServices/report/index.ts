@@ -13,9 +13,11 @@ export const reportApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ["Reports"],
   endpoints: (builder) => ({
     getReports: builder.query<Report[], void>({
       query: () => "reports",
+      providesTags: ["Reports"],
     }),
     getReportById: builder.query<any, any>({
       query: (id) => `reports/${id}`,
