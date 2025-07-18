@@ -24,7 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Report, Task } from "@/types/report";
 import { decodeJWT } from "@/utils/jwt";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useGetProjectsQuery } from "@/redux/apiServices/project";
 import { FULL_WORKING_TIME, GRAY_COLOR, HALF_WORKING_TIME } from "@/constants";
@@ -36,8 +36,9 @@ import useToast from "@/hooks/useToast";
 import { Project } from "@/types/project";
 import { useNavigate } from "react-router-dom";
 import { useGetTodayReportQuery } from "@/redux/apiServices/report";
+import ReportEditSkeleton from "./editSkeleton";
+import { userApi } from "@/redux/apiServices/user";
 
-// TaskCard component remains the same as in create.tsx
 const TaskCard = ({
   task,
   index,
@@ -68,7 +69,7 @@ const TaskCard = ({
         className="h-1 rounded-t-md"
         style={{ background: projectColor }}
       ></div>
-      <CardContent className="p-5">
+      <CardContent className="px-5 py-2">
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -103,7 +104,7 @@ const TaskCard = ({
             <div className="md:col-span-3 space-y-1">
               <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Briefcase className="h-4 w-4 text-gray-500" />
-                Project
+                Project<span className="text-red-500">*</span>
               </div>
               <Select
                 value={task.project.id?.toString()}
@@ -246,7 +247,6 @@ const TaskCard = ({
 
 // Main component
 const ReportEditForm = () => {
-  const navigate = useNavigate();
   const [workingTime, setWorkingTime] = useState<number>(0);
   const [totalHours, setTotalHours] = useState<number>(0);
   const [modifiedProjects, setModifiedProjects] = useState<Project[] | null>(
@@ -262,6 +262,9 @@ const ReportEditForm = () => {
   const currentUser = decodeJWT(
     useSelector((state: RootState) => state.auth.authToken)
   );
+  const navigate = useNavigate();
+  const { showSuccess, showWarning } = useToast();
+  const dispatch = useDispatch();
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: 1,
@@ -287,16 +290,18 @@ const ReportEditForm = () => {
       { id: currentUser.id, date: format(new Date(), "yyyy-MM-dd") },
       { refetchOnMountOrArgChange: true }
     );
-  const { data: todayReport, isSuccess: isTodayReportSuccess } =
-    useGetTodayReportQuery(
-      { userId: currentUser.id, status: "pending" },
-      { refetchOnMountOrArgChange: true }
-    );
+  const {
+    data: todayReport,
+    isLoading: isTodayReportLoading,
+    isSuccess: isTodayReportSuccess,
+  } = useGetTodayReportQuery(
+    { userId: currentUser.id, status: "pending" },
+    { refetchOnMountOrArgChange: true }
+  );
   const [
     updateReportMutation,
     { isLoading: isReportUpdating, isSuccess: isReportUpdateSuccess },
   ] = useUpdateReportMutation();
-  const { showSuccess, showWarning } = useToast();
 
   useEffect(() => {
     setAnimateProgress(true);
@@ -362,18 +367,18 @@ const ReportEditForm = () => {
 
   useEffect(() => {
     if (!isReportUpdateSuccess) return;
-    showSuccess("Your report has been updated successfully.");
+    dispatch(userApi.util.invalidateTags(["User"]));
     navigate("/reports");
+    showSuccess("Your report has been updated successfully.");
   }, [isReportUpdateSuccess]);
 
-  // Add effect to populate tasks from today's report
   useEffect(() => {
     if (!isTodayReportSuccess || !todayReport || todayReport.length === 0)
       return;
 
     const transformedTasks = todayReport.map(
-      (report: Report, index: number) => ({
-        id: index + 1,
+      (report: Report) => ({
+        id: report.id,
         project: {
           id:
             modifiedProjects?.find((p) => p.name === report.project)?.id ||
@@ -448,6 +453,7 @@ const ReportEditForm = () => {
   const updateReport = async () => {
     const tasksPayload = tasks.map((task) => {
       return {
+        id: task.id,
         task_title: task.title,
         task_description: task.description,
         project: task.project.name,
@@ -459,6 +465,10 @@ const ReportEditForm = () => {
     });
     await updateReportMutation({ id: currentUser.id, body: tasksPayload });
   };
+
+  if (isTodayReportLoading) {
+    return <ReportEditSkeleton />;
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-8">

@@ -53,6 +53,7 @@ export const userApi = createApi({
     }),
     getAuthorizedReportersWithUsersAndReports: builder.query<User[], void>({
       query: () => "users/authorized/reporters",
+      providesTags: ["User"],
     }),
     getAuthorizedReportersWithOneWeekReports: builder.query<User[], void>({
       query: () => "users/authorized/reporters/week",

@@ -65,7 +65,7 @@ const TaskCard = ({
         className="h-1 rounded-t-md"
         style={{ background: projectColor }}
       ></div>
-      <CardContent className="p-5">
+      <CardContent className="p-3">
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -103,7 +103,7 @@ const TaskCard = ({
               {/* Project */}
               <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <Briefcase className="h-4 w-4 text-gray-500" />
-                Project
+                Project<span className="text-red-500">*</span>
               </div>
               <Select
                 value={task.project.id?.toString()}
@@ -292,9 +292,14 @@ const ReportCreateForm = () => {
     );
   const [
     createReportMutation,
-    { isLoading: isReportCreating, isSuccess: isReportCreateSuccess },
+    {
+      isLoading: isReportCreating,
+      isSuccess: isReportCreateSuccess,
+      isError: isReportCreateError,
+      error: reportCreateError,
+    },
   ] = useCreateReportMutation();
-  const { showSuccess, showWarning } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
 
   const resetForm = () => {
     setTasks([
@@ -338,7 +343,6 @@ const ReportCreateForm = () => {
   }, [tasks]);
 
   useEffect(() => {
-    console.log("attendance: ", attendance);
     if (!isAttendanceSuccess) return;
 
     if (attendance === null) {
@@ -379,10 +383,22 @@ const ReportCreateForm = () => {
   }, [totalHours]);
 
   useEffect(() => {
-    if (!isReportCreateSuccess) return;
+    if (!isReportCreateSuccess && !isReportCreateError) return;
+
+    if (isReportCreateError) {
+      const err = reportCreateError as { status: number; data: any };
+
+      if (err.status === 400) {
+        showError(`${err.data?.message}`);
+      } else {
+        showError("Failed to submit report. Please try again.");
+      }
+      return;
+    }
+
     showSuccess("Your report has been submitted successfully.");
     resetForm();
-  }, [isReportCreateSuccess]);
+  }, [isReportCreateSuccess, isReportCreateError, reportCreateError]);
 
   const remainingHours = workingTime - totalHours;
   const hoursPercentage = (totalHours / workingTime) * 100;
