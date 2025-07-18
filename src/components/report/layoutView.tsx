@@ -72,7 +72,7 @@ const LayoutView: React.FC<props> = ({ date }) => {
   };
 
   const getTeamColor = (index: number): string => {
-    const colors = ["bg-[#678387]", "bg-[#3A4D8F]", "bg-[#5D9CEC]"];
+    const colors = ["bg-[#678387]", "bg-[#3A4D8F]", "bg-[#367fc7]"];
     return colors[index % colors.length];
   };
 
@@ -109,8 +109,8 @@ const LayoutView: React.FC<props> = ({ date }) => {
     setSelectedMemberReports(filteredReports);
   }, [selectedMember, date]);
 
-  if (isLoading || !teamsData) return <LayoutViewSkeleton />;
-  if (!isSuccess) return <Error500 />;
+  if (isLoading) return <LayoutViewSkeleton />;
+  if (!isSuccess || !teamsData) return <Error500 />;
 
   return (
     <>
