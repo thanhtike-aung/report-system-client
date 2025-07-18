@@ -31,7 +31,7 @@ import { FULL_WORKING_TIME, GRAY_COLOR, HALF_WORKING_TIME } from "@/constants";
 import { useGetAttendanceByIdAndDateQuery } from "@/redux/apiServices/attendance";
 import { format } from "date-fns";
 import { TYPE } from "@/constants/attendance";
-import { reportApi, useUpdateReportMutation } from "@/redux/apiServices/report";
+import { useUpdateReportMutation } from "@/redux/apiServices/report";
 import useToast from "@/hooks/useToast";
 import { Project } from "@/types/project";
 import { useNavigate } from "react-router-dom";
@@ -377,7 +377,7 @@ const ReportEditForm = () => {
       return;
 
     const transformedTasks = todayReport.map(
-      (report: Report, index: number) => ({
+      (report: Report) => ({
         id: report.id,
         project: {
           id:
