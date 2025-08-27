@@ -1,5 +1,10 @@
 import { Project } from "@/types/project";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  ApiResponse,
+  transformApiResponse,
+  transformApiResponseSingle,
+} from "@/types";
 
 export const projectApi = createApi({
   reducerPath: "projectApi",
@@ -17,11 +22,13 @@ export const projectApi = createApi({
   endpoints: (builder) => ({
     getProjects: builder.query<Project[], void>({
       query: () => "projects",
+      transformResponse: transformApiResponse,
       keepUnusedDataFor: 60,
       providesTags: ["Projects"],
     }),
     getProjectById: builder.query<Project, string>({
       query: (id) => `project/${id}`,
+      transformResponse: transformApiResponseSingle,
     }),
     createProject: builder.mutation<Project, { name: string; color: string }>({
       query: (body) => ({
@@ -29,6 +36,7 @@ export const projectApi = createApi({
         method: "POST",
         body,
       }),
+      transformResponse: transformApiResponseSingle,
     }),
     updateProject: builder.mutation<
       Project,
@@ -39,12 +47,14 @@ export const projectApi = createApi({
         method: "PATCH",
         body,
       }),
+      transformResponse: transformApiResponseSingle,
     }),
     deleteProject: builder.mutation<Project, number>({
       query: (id) => ({
         url: `projects/${id}`,
         method: "DELETE",
       }),
+      transformResponse: transformApiResponseSingle,
     }),
   }),
 });

@@ -390,6 +390,8 @@ const ReportCreateForm = () => {
 
       if (err.status === 400) {
         showError(`${err.data?.message}`);
+      } else if (err.status === 409) {
+        showError("You have already submitted a report for today.");
       } else {
         showError("Failed to submit report. Please try again.");
       }

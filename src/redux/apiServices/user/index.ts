@@ -1,5 +1,10 @@
 import { User, UserPayload } from "@/types/user";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  ApiResponse,
+  transformApiResponse,
+  transformApiResponseSingle,
+} from "@/types";
 
 export const userApi = createApi({
   reducerPath: "userApi",
@@ -17,10 +22,12 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
       query: () => "users",
+      transformResponse: transformApiResponse,
       providesTags: ["User"],
     }),
     getUserById: builder.query<User, string>({
       query: (id) => `users/${id}`,
+      transformResponse: transformApiResponseSingle,
     }),
     createUser: builder.mutation<any, any>({
       query: (body) => ({
@@ -35,12 +42,14 @@ export const userApi = createApi({
         method: "PATCH",
         body,
       }),
+      transformResponse: transformApiResponseSingle,
     }),
     deactivateUser: builder.mutation<User, string>({
       query: (id) => ({
         url: `users/${id}/deactivate`,
         method: "PATCH",
       }),
+      transformResponse: transformApiResponseSingle,
     }),
     deleteUser: builder.mutation<any, string>({
       query: (id) => ({
@@ -50,13 +59,16 @@ export const userApi = createApi({
     }),
     getUsersExceptId: builder.query<User[], number>({
       query: (id) => `users/not/${id}`,
+      transformResponse: transformApiResponse,
     }),
     getAuthorizedReportersWithUsersAndReports: builder.query<User[], void>({
       query: () => "users/authorized/reporters",
+      transformResponse: transformApiResponse,
       providesTags: ["User"],
     }),
     getAuthorizedReportersWithOneWeekReports: builder.query<User[], void>({
       query: () => "users/authorized/reporters/week",
+      transformResponse: transformApiResponse,
     }),
   }),
 });

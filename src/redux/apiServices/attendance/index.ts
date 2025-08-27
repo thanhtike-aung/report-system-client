@@ -1,5 +1,10 @@
 import { Attendance, AttendancePayload } from "@/types/attendance";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  ApiResponse,
+  transformApiResponse,
+  transformApiResponseSingle,
+} from "@/types";
 
 export const attendanceApi = createApi({
   reducerPath: "attendanceApi",
@@ -17,15 +22,18 @@ export const attendanceApi = createApi({
   endpoints: (builder) => ({
     getAttendances: builder.query<Attendance[], void>({
       query: () => "attendances",
+      transformResponse: transformApiResponse,
     }),
     getAttendanceById: builder.query<Attendance, string>({
       query: (id) => `attendances/${id}`,
+      transformResponse: transformApiResponseSingle,
     }),
     getAttendanceByIdAndDate: builder.query<
       Attendance,
       { id: string; date: string }
     >({
       query: (payload) => `attendances/${payload.id}/${payload.date}`,
+      transformResponse: transformApiResponseSingle,
       providesTags: ["Attendance"],
     }),
     createAttendance: builder.mutation<any, AttendancePayload>({
@@ -34,6 +42,7 @@ export const attendanceApi = createApi({
         method: "POST",
         body,
       }),
+      transformResponse: transformApiResponseSingle,
     }),
     updateAttendance: builder.mutation<any, any>({
       query: ({ id, body }) => ({
@@ -41,6 +50,7 @@ export const attendanceApi = createApi({
         method: "PATCH",
         body,
       }),
+      transformResponse: transformApiResponseSingle,
     }),
   }),
 });

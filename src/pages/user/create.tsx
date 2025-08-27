@@ -154,7 +154,7 @@ const MemberCreateForm: React.FC = () => {
     e.preventDefault();
     try {
       const user = await createUserMutation(formData).unwrap();
-      setCreatedUser({ email: user.email, password: formData.password });
+      setCreatedUser({ email: user.data.email, password: formData.password });
 
       // force to refetch users data for Leader selectbox
       dispatch(userApi.util.invalidateTags(["User"]));

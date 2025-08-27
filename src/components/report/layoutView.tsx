@@ -5,7 +5,7 @@ import { Report } from "@/types/report";
 import { User } from "@/types/user";
 import { isSameDay, parseISO } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronRight, Users, X, Pencil } from "lucide-react";
+import { ChevronRight, Users, X, Pencil, Trash } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import {
@@ -20,6 +20,18 @@ import { RootState } from "@/redux/store";
 import { decodeJWT } from "@/utils/jwt";
 import LayoutViewSkeleton from "./layoutViewSkeleton";
 import Error500 from "../error/500";
+import { Dialog, DialogTrigger } from "../ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 interface props {
   date: Date;
@@ -45,6 +57,8 @@ const LayoutView: React.FC<props> = ({ date }) => {
   const [selectedMemberReports, setSelectedMemberReports] = useState<
     Report[] | null
   >(null);
+  const [openDeleteReportDialog, setOpenDeleteReportDialog] =
+    useState<boolean>(false);
   const {
     data: reportSenders,
     isSuccess,
@@ -260,7 +274,31 @@ const LayoutView: React.FC<props> = ({ date }) => {
                 ref={reportContainerRef}
                 className="rounded-md border border-slate-200 bg-slate-50 p-4"
               >
-                <h5 className="font-semibold text-xl mb-2">■今日の作業実績</h5>
+                <div className="flex items-center justify-between">
+                  <h5 className="font-semibold text-xl mb-2">
+                    ■今日の作業実績
+                  </h5>
+                  {selectedMember.id === currentUser.id &&
+                    selectedMemberReports?.length !== 0 && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              className="no-override custom-animate-button cursor-pointer"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setOpenDeleteReportDialog(true)}
+                            >
+                              <Trash className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Delete your report</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                </div>
                 {selectedMemberReports?.map((report: Report, index: number) =>
                   report.working_time > 0 ? (
                     <div key={report.id} className="mt-2.5">
@@ -286,7 +324,37 @@ const LayoutView: React.FC<props> = ({ date }) => {
           )}
         </AnimatePresence>
       </div>
+      <DeleteReportDialog
+        open={openDeleteReportDialog}
+        setOpen={setOpenDeleteReportDialog}
+      />
     </>
+  );
+};
+
+const DeleteReportDialog = ({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) => {
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription>
+          This action cannot be undone. This will permanently delete your
+          report.
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

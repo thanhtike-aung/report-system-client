@@ -376,22 +376,19 @@ const ReportEditForm = () => {
     if (!isTodayReportSuccess || !todayReport || todayReport.length === 0)
       return;
 
-    const transformedTasks = todayReport.map(
-      (report: Report) => ({
-        id: report.id,
-        project: {
-          id:
-            modifiedProjects?.find((p) => p.name === report.project)?.id ||
-            null,
-          name: report.project,
-        },
-        title: report.task_title,
-        description: report.task_description,
-        progress: report.progress,
-        manHours: report.man_hours,
-        isExpanded: false,
-      })
-    );
+    const transformedTasks = todayReport.map((report: Report) => ({
+      id: report.id,
+      project: {
+        id:
+          modifiedProjects?.find((p) => p.name === report.project)?.id || null,
+        name: report.project,
+      },
+      title: report.task_title,
+      description: report.task_description,
+      progress: report.progress,
+      manHours: report.man_hours,
+      isExpanded: false,
+    }));
 
     setTasks(transformedTasks);
     setWorkingTime(todayReport[0].working_time);

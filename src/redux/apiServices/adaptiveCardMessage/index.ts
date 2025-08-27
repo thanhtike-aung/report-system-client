@@ -1,4 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  ApiResponse,
+  transformApiResponse,
+  transformApiResponseSingle,
+} from "@/types";
 
 export const adaptiveCardMessageApi = createApi({
   reducerPath: "adaptiveCardMessageApi",
@@ -15,9 +20,11 @@ export const adaptiveCardMessageApi = createApi({
   endpoints: (builder) => ({
     getCardMessages: builder.query<any, void>({
       query: () => "cardmessages",
+      transformResponse: transformApiResponse,
     }),
     getCardMessageByType: builder.query<any, string>({
       query: (type) => `cardmessages/${type}`,
+      transformResponse: transformApiResponseSingle,
     }),
   }),
 });

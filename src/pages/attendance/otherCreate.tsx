@@ -44,6 +44,7 @@ import {
 import { get } from "@/utils/fetch/get";
 import useToast from "@/hooks/useToast";
 import { useCreateAttendanceMutation } from "@/redux/apiServices/attendance";
+import { ApiResponse } from "@/types";
 
 const getInitialFormState = () => ({
   member: "",
@@ -61,7 +62,7 @@ const getInitialFormState = () => ({
 });
 
 export default function OtherAttendanceForm() {
-  const [users, setUsers] = useState<User[] | null>(null);
+  const [users, setUsers] = useState<ApiResponse<User[]> | null>(null);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [formState, setFormState] = useState(getInitialFormState());
   const [storedAuthToken, ,] = useLocalStorage<string | null>(
@@ -123,8 +124,8 @@ export default function OtherAttendanceForm() {
         workspace:
           leavePeriod !== LEAVE_PERIOD.FULL ? (workspace as Workspace) : null,
         project:
-          users?.find((user) => user.id === Number(member))?.project?.name ||
-          "",
+          users?.data?.find((user) => user.id === Number(member))?.project
+            ?.name || "",
         createdBy: currentUser?.id || 0,
         reportedBy: Number(member),
         isLate: isLate,
@@ -147,7 +148,7 @@ export default function OtherAttendanceForm() {
     if (!currentUser) return;
 
     // get all users except current logged-in user for memeber select box
-    get(`${import.meta.env.VITE_VERCEL_API_URL}/users/not/${currentUser.id}`)
+    get(`${import.meta.env.VITE_VERCEL_API_URL}users/not/${currentUser.id}`)
       .then((data) => {
         setUsers(data);
       })
@@ -223,7 +224,7 @@ export default function OtherAttendanceForm() {
                 </SelectTrigger>
                 <SelectContent>
                   {users &&
-                    users.map((user) => (
+                    users.data?.map((user: User) => (
                       <SelectItem key={user.id} value={user.id.toString()}>
                         {user.name}
                       </SelectItem>

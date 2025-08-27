@@ -4,6 +4,7 @@ import {
   LoginRequest,
 } from "@/types/auth";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { ApiResponse, transformApiResponseSingle } from "@/types";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -15,12 +16,14 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
+      transformResponse: transformApiResponseSingle,
     }),
     logout: builder.mutation<void, void>({
       query: () => ({
         url: "/logout",
         method: "POST",
       }),
+      transformResponse: transformApiResponseSingle,
     }),
     changePassword: builder.mutation<any, ChangePasswordRequest>({
       query: (credentials) => ({
@@ -28,6 +31,7 @@ export const authApi = createApi({
         method: "PATCH",
         body: credentials,
       }),
+      transformResponse: transformApiResponseSingle,
     }),
   }),
 });
